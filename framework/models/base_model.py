@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-class DefaultModel(nn.Module):
+class BaseModel(nn.Module):
     """
         This is the class which all models in the framework must extend
         All the scrips will be considering the interface defined here as the way to communicate with the models
