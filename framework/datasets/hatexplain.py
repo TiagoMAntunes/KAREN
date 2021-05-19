@@ -85,7 +85,7 @@ class HateXPlain(BaseDataset):
 
         # padding of tokens and transformation
         max_size = max(map(lambda x: len(x), tokens))
-        padding_mask = [[True] * len(x) + [False] * (max_size - len(x)) for x in tokens] # TODO is it false or True for the missing ones? currently false
+        padding_mask = [[True] * len(x) + [False] * (max_size - len(x)) for x in tokens]
         tokens = [list(map(lambda y: word_to_idx[y], x)) + [0]
                   * (max_size - len(x)) for x in tokens]
 
@@ -114,3 +114,9 @@ class HateXPlain(BaseDataset):
     @classmethod
     def get_properties(cls):
         return ['id', 'tokens', 'padding', 'label', 'annotator_labels'], ['annotator_targets', 'rationales']
+
+    def get_input_feat_size(self):
+        return self.data['tokens'].shape[-1]
+
+    def get_output_feat_size(self):
+        return len(self.label_to_idx)

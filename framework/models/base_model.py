@@ -9,7 +9,7 @@ class BaseModel(nn.Module):
     """
 
     def __init__(self):
-        super(DefaultModel, self).__init__()
+        super(BaseModel, self).__init__()
 
     def forward(self, *args):
         raise NotImplementedError('Model must implement a forward function that processes the input')
@@ -40,3 +40,9 @@ class BaseModel(nn.Module):
         """
 
         raise NotImplementedError('Model must specify what are the types of data it needs from the dataset')
+
+    def get_input_feat_size(self):
+        raise NotImplementedError()
+
+    def get_output_feat_size(self):
+        raise NotImplementedError()
