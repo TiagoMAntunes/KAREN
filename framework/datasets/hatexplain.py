@@ -3,8 +3,14 @@ from base_dataset import BaseDataset
 import pandas as pd
 from collections import Counter
 
-
 class HateXPlain(BaseDataset):
+    """
+        Original repo: https://github.com/hate-alert/HateXplain/tree/master/Data
+        
+        Paper: https://arxiv.org/abs/2012.10289
+        
+        HateXPlain is a benchmark dataset handcrafter for the specific task of hate speech detection.
+    """
 
     def __init__(self, url='https://raw.githubusercontent.com/hate-alert/HateXplain/master/Data/dataset.json', name='HateXPlain.dataset'):
         super().__init__(url, name)
