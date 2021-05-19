@@ -1,7 +1,63 @@
 import torch
+import os
+
+DATASET_FOLDER = "available_datasets/"
 
 
 class BaseDataset(torch.utils.data.Dataset):
+    """
+        This is the base class for the available datasets to extend
+        All the scripts should only use the interface described in this class
+    """
 
-    def __init__(self, *args):
-        raise NotImplementedError
+    def __init__(self, url, name, debug=True):
+        super(BaseDataset, self).__init__()
+
+        # check if the dataset location exists and if it's already downloaded
+        if not os.path.exists(DATASET_FOLDER):
+            if debug:
+                print(f"Creating datasets folder")
+            os.mkdir(DATASET_FOLDER)
+
+        location = DATASET_FOLDER + name
+
+        if not os.path.exists(location):
+            if debug:
+                print(
+                    f"Saving dataset {self.__class__.__name__} to {location}")
+            self.download(url, location)
+            self.preprocess()
+
+    def download(self, url, location, debug=True):
+        """
+            This class is given the url and location which are also specified in the creation of the subclass
+            The location is not supposed to be changed as it will include the name that was assigned to the dataset
+        """
+        import urllib.request
+        import shutil
+        with urllib.request.urlopen(url) as response, open(location, 'wb') as f:
+            if debug:
+                print(f"Downloading file from {url}")
+            shutil.copyfileobj(response, f)
+
+    def __getitem__(self, idx):
+        raise NotImplementedError(
+            f'No getitem built-in method implemented for class {self.__class__.__name__}')
+
+    def __len__(self):
+        raise NotImplementedError(
+            f'No len built-in method implemented for class {self.__class__.__name__}')
+
+    def preprocess(self):
+        raise NotImplementedError(
+            f'No available preprocessing for class {self.__class__.__name__}')
+
+    @classmethod
+    def get_properties(cls):
+        """ 
+            Because datasets have different properties, it makes sense for class each one of them to state what properties it contains. The keywords should be shared across datasets for class a unified format
+
+            Should return a set with the available labels of its content
+        """
+        raise NotImplementedError(
+            f'No get_properties method implemented for class {cls.__name__}')
