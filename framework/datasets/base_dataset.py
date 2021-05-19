@@ -11,6 +11,11 @@ class BaseDataset(torch.utils.data.Dataset):
     """
 
     def __init__(self, url, name, debug=True):
+        """
+            This will automatically download the dataset into the corresponding folder and set the `location` class parameter for usage in the subclass
+
+            In case the default download method does not work, subclasses can specialize it and provide a custom download method
+        """
         super(BaseDataset, self).__init__()
 
         # check if the dataset location exists and if it's already downloaded
@@ -26,7 +31,8 @@ class BaseDataset(torch.utils.data.Dataset):
                 print(
                     f"Saving dataset {self.__class__.__name__} to {location}")
             self.download(url, location)
-            self.preprocess()
+
+        self.location = location
 
     def download(self, url, location, debug=True):
         """
