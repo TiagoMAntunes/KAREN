@@ -29,10 +29,10 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         dataset) - round(split_amount*len(dataset))], generator=torch.Generator().manual_seed(seed))
 
     train = torch.utils.data.DataLoader(
-        train, batch_size=256, num_workers=4, collate_fn=collate_fn)
+        train, batch_size=256, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
     test = torch.utils.data.DataLoader(
-        test, batch_size=256, num_workers=4, collate_fn=collate_fn)
+        test, batch_size=256, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
     model.eval()
     tot = 0
@@ -57,7 +57,9 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         for i, batch in tqdm(enumerate(train)):
             for key in batch:
                 batch[key] = batch[key].to(device)
-            optimizer.zero_grad()
+            
+            for param in model.parameters():
+                param.grad = None
 
             outputs = model(batch)
             loss = loss_fn(outputs, batch['label'])
