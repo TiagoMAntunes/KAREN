@@ -24,7 +24,7 @@ class HateXPlain(BaseDataset):
             self.preprocess()
 
         # return self.data.iloc[idx]
-        return [self.data[x][idx] for x in self.__class__.get_properties()[0]] #+ [self.data[x][idx] for x in self.__class__.get_properties()[1]]
+        return [self.data[x][idx] for x in self.__class__.get_properties()[0]] + [self.data[x][idx] for x in self.__class__.get_properties()[1]]
 
     def __len__(self):
         if not self.preprocessed:

@@ -29,16 +29,18 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         dataset) - round(split_amount*len(dataset))], generator=torch.Generator().manual_seed(seed))
 
     train = torch.utils.data.DataLoader(
-        train, batch_size=256, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+        train, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
     test = torch.utils.data.DataLoader(
-        test, batch_size=256, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+        test, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
     model.eval()
     tot = 0
     correct = 0
     for i, batch in enumerate(test):
         for key in batch:
+            if not torch.is_tensor(batch[key]):
+                continue
             batch[key] = batch[key].to(device)
         outputs = model(batch)
         results = outputs.argmax(dim=-1)
@@ -56,6 +58,8 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         model.train()
         for i, batch in tqdm(enumerate(train)):
             for key in batch:
+                if not torch.is_tensor(batch[key]):
+                    continue
                 batch[key] = batch[key].to(device)
             
             for param in model.parameters():
@@ -74,7 +78,10 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         correct = 0
         for i, batch in enumerate(test):
             for key in batch:
+                if not torch.is_tensor(batch[key]):
+                    continue
                 batch[key] = batch[key].to(device)
+
             outputs = model(batch)
             results = outputs.argmax(dim=-1)
 
