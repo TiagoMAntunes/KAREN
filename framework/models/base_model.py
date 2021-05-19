@@ -36,7 +36,7 @@ class BaseModel(nn.Module):
             Models have different data requirements. This function must return the information that it must get from the dataset so that it can be given to it as an arguments to forward
 
             TODO
-            TIAGO: I think the best way would be to treat the data as a dictionary and they could select keywords from there to get the specific data. This automatically filters which datasets they can access and allows for an easy extension of the way we feed in the data in case there are a lot of different types. The datasets must be split to have these keywords though
+            TIAGO: I think the best way would be to treat the data as a dictionary and they could select keywords from there to get the specific data. This automatically filters which datasets they can access and allows for an easy extension of the way we feed in the data in case there are a lot of different types. The datasets must be restricted to have these keywords though, as to avoid having different labels: id vs idx, etc...
         """
 
         raise NotImplementedError('Model must specify what are the types of data it needs from the dataset')

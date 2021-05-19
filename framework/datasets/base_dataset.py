@@ -47,6 +47,9 @@ class BaseDataset(torch.utils.data.Dataset):
             shutil.copyfileobj(response, f)
 
     def __getitem__(self, idx):
+        """
+            This function must return the elements in the order given by @get_properties
+        """
         raise NotImplementedError(
             f'No getitem built-in method implemented for class {self.__class__.__name__}')
 
@@ -63,7 +66,11 @@ class BaseDataset(torch.utils.data.Dataset):
         """ 
             Because datasets have different properties, it makes sense for class each one of them to state what properties it contains. The keywords should be shared across datasets for class a unified format
 
-            Should return a set with the available labels of its content
+            Should return two sets with the available content in the dataset. Set 1 must contains properties that can be converted into tensor, set 2 must contain types not supported (ex: lists, strings)
         """
         raise NotImplementedError(
             f'No get_properties method implemented for class {cls.__name__}')
+
+    def get_dataset(self):
+        raise NotImplementedError(
+            f'No get_dataset method implemented for class {self.__class__.__name__}')

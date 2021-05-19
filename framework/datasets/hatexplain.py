@@ -1,14 +1,17 @@
 import torch
-from base_dataset import BaseDataset
-import pandas as pd
+from .base_dataset import BaseDataset
+import numpy as np
 from collections import Counter
+
+#!/usr/bin/env python -W ignore::VisibleDeprecationWarning
+
 
 class HateXPlain(BaseDataset):
     """
         Original repo: https://github.com/hate-alert/HateXplain/tree/master/Data
-        
+
         Paper: https://arxiv.org/abs/2012.10289
-        
+
         HateXPlain is a benchmark dataset handcrafter for the specific task of hate speech detection.
     """
 
@@ -20,13 +23,14 @@ class HateXPlain(BaseDataset):
         if not self.preprocessed:
             self.preprocess()
 
-        return self.data.iloc[idx]
+        # return self.data.iloc[idx]
+        return [self.data[x][idx] for x in self.__class__.get_properties()[0]] #+ [self.data[x][idx] for x in self.__class__.get_properties()[1]]
 
     def __len__(self):
         if not self.preprocessed:
             self.preprocess()
 
-        return len(self.data)
+        return self.len
 
     def preprocess(self, debug=True):
         import os
@@ -39,40 +43,74 @@ class HateXPlain(BaseDataset):
         with open(self.location) as f:
             data = json.load(f)
 
-        dataframe_data = []
+        ids = []
+        tokens = []
+        label = []
+        annotator_labels = []
+        annotator_targets = []
+        rationales = []
+
+        labels = set(['undecided'])
+        vocab = set()
         for idx, content in data.items():
-            entry = {}
+            ids.append(idx)
+            tokens.append(content['post_tokens'])
+            vocab.update(set(tokens[-1]))
 
-            entry['id'] = idx
-            entry['tokens'] = content['post_tokens']
-
-            entry['annotator_labels'] = [x['label']
-                                         for x in content['annotators']]
-            entry['annotator_targets'] = [x['target']
-                                          for x in content['annotators']]
+            annotator_labels.append([x['label']
+                                     for x in content['annotators']])
+            annotator_targets.append([x['target']
+                                      for x in content['annotators']])
 
             max_value = ('', 0)
             counter = 0
 
             # compares the results for each type of classification and picks the most voted one. undecided if not specified
-            for val, count in Counter(entry['annotator_labels']).items():
+            for val, count in Counter(annotator_labels[-1]).items():
+                labels.update(set([val]))
                 if count > max_value[1]:
                     max_value = (val, count)
                     counter = 1
                 elif count == max_value[1]:
                     counter += 1
-            
-            entry['label'] = max_value[0] if counter == 1 else "undecided"
-            # TODO is this slow?
 
-            entry['rationales'] = content['rationales']
-            dataframe_data.append(entry)
+            label.append(max_value[0] if counter == 1 else "undecided")
 
-        self.data = pd.DataFrame(dataframe_data)
+            rationales.append(content['rationales'])
+
+        # transform labels into numbers for classification
+        label_to_idx = {label: i for i, label in enumerate(labels)}
+
+        word_to_idx = {word: i for i, word in enumerate(vocab)}
+
+        # padding of tokens and transformation
+        max_size = max(map(lambda x: len(x), tokens))
+        padding_mask = [[True] * len(x) + [False] * (max_size - len(x)) for x in tokens] # TODO is it false or True for the missing ones? currently false
+        tokens = [list(map(lambda y: word_to_idx[y], x)) + [0]
+                  * (max_size - len(x)) for x in tokens]
+
+
+        # transform ids into ints
+        ids_to_idx = {idx: i for i, idx in enumerate(ids)}
+        ids = [ids_to_idx[idx] for idx in ids]
+
+        # This is done like this to avoid warnings from numpy
+        self.data = {
+            'id': np.array(ids, dtype=int),
+            'tokens': np.array(tokens, dtype=int),
+            'padding': np.array(padding_mask, dtype=bool),
+            'label': np.array([label_to_idx[x] for x in label], dtype=int),
+            'annotator_labels': np.array([[label_to_idx[y] for y in x] for x in annotator_labels], dtype=int),
+            'annotator_targets': np.array(annotator_targets, dtype=object),
+            'rationales': np.array(rationales, dtype=object)
+        }
+
+        self.ids_to_idx = ids_to_idx
+        self.label_to_idx = label_to_idx
+        self.word_to_idx = word_to_idx
         self.preprocessed = True
-
-        assert set(self.data.columns) == self.__class__.get_properties()
+        self.len = len(data)
 
     @classmethod
     def get_properties(cls):
-        return set(['id', 'tokens', 'label', 'annotator_labels', 'annotator_targets', 'rationales'])
+        return ['id', 'tokens', 'padding', 'label', 'annotator_labels'], ['annotator_targets', 'rationales']
