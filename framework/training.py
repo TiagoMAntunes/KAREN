@@ -23,7 +23,7 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
     # TODO early stopping, model saving?
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    # model.to(device)
+    model.to(device)
 
     train, test = torch.utils.data.random_split(dataset, [round(split_amount*len(dataset)), len(
         dataset) - round(split_amount*len(dataset))], generator=torch.Generator().manual_seed(seed))
@@ -38,6 +38,8 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
     tot = 0
     correct = 0
     for i, batch in enumerate(test):
+        for key in batch:
+            batch[key] = batch[key].to(device)
         outputs = model(batch)
         results = outputs.argmax(dim=-1)
 
@@ -53,6 +55,8 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         c = 0
         model.train()
         for i, batch in tqdm(enumerate(train)):
+            for key in batch:
+                batch[key] = batch[key].to(device)
             optimizer.zero_grad()
 
             outputs = model(batch)
@@ -67,6 +71,8 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         tot = 0
         correct = 0
         for i, batch in enumerate(test):
+            for key in batch:
+                batch[key] = batch[key].to(device)
             outputs = model(batch)
             results = outputs.argmax(dim=-1)
 
