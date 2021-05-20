@@ -117,7 +117,24 @@ class HateXPlain(BaseDataset):
         return ['id', 'tokens', 'padding', 'label', 'annotator_labels'], ['annotator_targets', 'rationales']
 
     def get_input_feat_size(self):
+        if not self.preprocessed:
+            self.preprocess()
+
         return self.data['tokens'].shape[-1]
 
     def get_output_feat_size(self):
+        if not self.preprocessed:
+            self.preprocess()
+            
         return len(self.label_to_idx)
+
+    @staticmethod
+    def make_dataset(args):
+        return HateXPlain(args.url_hatexplain, args.savename_hatexplain)
+    
+    @staticmethod
+    def add_required_arguments(parser):
+        group = parser.add_argument_group()
+
+        group.add_argument('--url-hatexplain', type=str, default='https://raw.githubusercontent.com/hate-alert/HateXplain/master/Data/dataset.json')
+        group.add_argument('--savename-hatexplain', type=str, default='HateXPlain.dataset')

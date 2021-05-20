@@ -24,7 +24,7 @@ class BaseModel(nn.Module):
             'Model must specify which arguments it needs to collect from the parser')
 
     @staticmethod
-    def make_model(parser):
+    def make_model(args):
         """
             Scripts should not specify which arguments they are giving to the model, all the data must be extracted by them
             Therefore, to create a model, a script should do something like:
@@ -44,9 +44,3 @@ class BaseModel(nn.Module):
 
         raise NotImplementedError(
             'Model must specify what are the types of data it needs from the dataset')
-
-    def get_input_feat_size(self):
-        raise NotImplementedError()
-
-    def get_output_feat_size(self):
-        raise NotImplementedError()

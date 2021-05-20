@@ -32,7 +32,7 @@ def add_iteration_params(parser):
 
     group.add_argument('--cpu', action='store_true',
                        help='Whether to use CPU instead of CUDA to run the model')
-    group.add_argument('--max-epoch', '-epochs', default=50, type=int,
+    group.add_argument('--max-epochs', '--epochs', default=50, type=int,
                        help='The number of iterations to run the optimization')
 
 
@@ -61,9 +61,32 @@ def get_specific_dataset_params(parser, args):
         print('Invalid dataset selection: {}. Available datasets:\n- {}'.format(invalid, "\n- ".join(sorted(DATASETS.keys()))))
         raise ValueError('Invalid dataset selection')
 
-    # TODO at the moment, datasets don't have parameters, do they need?
+    # also check if the models can be run on the datasets
+    for model, dataset in ((x,y) for x in args.model for y in args.dataset):
+        r = set(MODELS[model].data_requirements())
+        a = set(
+            ( lambda x,y: x+y ) (*DATASETS[dataset].get_properties())
+        )
+        if not r.issubset(a):
+            raise ValueError(f'Dataset {dataset} does not contain all model {model} requirements: {r.difference(a)} ')
 
 
+    for d in args.dataset:
+        DATASETS[d].add_required_arguments(group)
+
+
+def start(args):
+    # Create all the required data to perform the computation
+    datasets = [DATASETS[x].make_dataset(args) for x in args.dataset]
+    for d in datasets:
+        args.in_feat = d.get_input_feat_size()
+        args.out_feat = d.get_output_feat_size()
+        models = [MODELS[x].make_model(args) for x in args.model]
+
+        # TODO criterion, optimizer
+        print(args)
+        for m in models:
+            framework.training.train(m, d, nn.CrossEntropyLoss(), torch.optim.Adam(m.parameters()), max_iterations=args.max_epochs)
 
 if __name__ == '__main__':
 
@@ -86,5 +109,7 @@ if __name__ == '__main__':
 
     # now parse them all
     args = parser.parse_args()
-    print(args)
-    # framework.training.train()
+    
+    # TODO display a resume of the configuration that will be run
+
+    start(args)

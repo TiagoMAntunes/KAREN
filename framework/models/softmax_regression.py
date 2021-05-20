@@ -22,11 +22,13 @@ class SoftmaxRegression(BaseModel):
 
     @staticmethod
     def add_required_arguments(parser):
-        pass
+        group = parser.add_argument_group()
+
+        group.add_argument('--dropout', type=float, default=0.1)
 
     @staticmethod
-    def make_model(parser):
-        pass
+    def make_model(args):
+        return SoftmaxRegression(args.in_feat, args.out_feat, dropout=args.dropout)
 
     @staticmethod
     def data_requirements():

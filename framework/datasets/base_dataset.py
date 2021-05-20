@@ -70,3 +70,18 @@ class BaseDataset(torch.utils.data.Dataset):
         """
         raise NotImplementedError(
             f'No get_properties method implemented for class {cls.__name__}')
+
+    def get_input_feat_size(self):
+        raise ValueError(f'No input feat size implementation')
+
+    def get_output_feat_size(self):
+        raise ValueError(f'No output feat size implementation')
+
+    @staticmethod
+    def make_dataset(args):
+        raise ValueError(f'No make_dataset implementation')
+    
+    @staticmethod
+    def add_required_arguments(parser):
+        raise ValueError(f'No add requried arguments implementation')
+        
