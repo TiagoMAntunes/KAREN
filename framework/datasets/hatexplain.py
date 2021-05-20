@@ -3,9 +3,10 @@ from .base_dataset import BaseDataset
 import numpy as np
 from collections import Counter
 
-#!/usr/bin/env python -W ignore::VisibleDeprecationWarning
+from ..register_dataset import RegisterDataset
 
 
+@RegisterDataset('HateXPlain')
 class HateXPlain(BaseDataset):
     """
         Original repo: https://github.com/hate-alert/HateXplain/tree/master/Data
@@ -85,10 +86,10 @@ class HateXPlain(BaseDataset):
 
         # padding of tokens and transformation
         max_size = max(map(lambda x: len(x), tokens))
-        padding_mask = [[True] * len(x) + [False] * (max_size - len(x)) for x in tokens]
+        padding_mask = [[True] * len(x) + [False]
+                        * (max_size - len(x)) for x in tokens]
         tokens = [list(map(lambda y: word_to_idx[y], x)) + [0]
                   * (max_size - len(x)) for x in tokens]
-
 
         # transform ids into ints
         ids_to_idx = {idx: i for i, idx in enumerate(ids)}

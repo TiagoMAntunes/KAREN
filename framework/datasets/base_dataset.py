@@ -70,7 +70,3 @@ class BaseDataset(torch.utils.data.Dataset):
         """
         raise NotImplementedError(
             f'No get_properties method implemented for class {cls.__name__}')
-
-    def get_dataset(self):
-        raise NotImplementedError(
-            f'No get_dataset method implemented for class {self.__class__.__name__}')
