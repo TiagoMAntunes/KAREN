@@ -1,8 +1,10 @@
 import torch
 import torch.nn as nn
 from .base_model import BaseModel
+from ..register import RegisterModel
 
 
+@RegisterModel('SoftmaxRegression')
 class SoftmaxRegression(BaseModel):
     """
         A simple model that applies a Feed Forward Network with a softmax at the end
@@ -14,7 +16,7 @@ class SoftmaxRegression(BaseModel):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, data):
-        # to mask just multiply by zero the values 
+        # to mask just multiply by zero the values
         res = data['tokens'] * data['padding']
         return self.dropout(self.linear(res.float()))
 

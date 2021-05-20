@@ -12,14 +12,16 @@ class BaseModel(nn.Module):
         super(BaseModel, self).__init__()
 
     def forward(self, *args):
-        raise NotImplementedError('Model must implement a forward function that processes the input')
+        raise NotImplementedError(
+            'Model must implement a forward function that processes the input')
 
     @staticmethod
     def add_required_arguments(parser):
         """
             Models must define this class to request the required arguments from the parser
         """
-        raise NotImplementedError('Model must specify which arguments it needs to collect from the parser')
+        raise NotImplementedError(
+            'Model must specify which arguments it needs to collect from the parser')
 
     @staticmethod
     def make_model(parser):
@@ -28,7 +30,8 @@ class BaseModel(nn.Module):
             Therefore, to create a model, a script should do something like:
             >>> model = modelclass.make_model(parser)
         """
-        raise NotImplementedError('Model must implement a parser input extraction method, returning the model object with the correct arguments.')
+        raise NotImplementedError(
+            'Model must implement a parser input extraction method, returning the model object with the correct arguments.')
 
     @staticmethod
     def data_requirements():
@@ -39,7 +42,8 @@ class BaseModel(nn.Module):
             TIAGO: I think the best way would be to treat the data as a dictionary and they could select keywords from there to get the specific data. This automatically filters which datasets they can access and allows for an easy extension of the way we feed in the data in case there are a lot of different types. The datasets must be restricted to have these keywords though, as to avoid having different labels: id vs idx, etc...
         """
 
-        raise NotImplementedError('Model must specify what are the types of data it needs from the dataset')
+        raise NotImplementedError(
+            'Model must specify what are the types of data it needs from the dataset')
 
     def get_input_feat_size(self):
         raise NotImplementedError()

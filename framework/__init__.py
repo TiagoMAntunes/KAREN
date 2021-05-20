@@ -1,3 +1,4 @@
-from .datasets import *
-from .training import train
-from .models import *
+from . import (
+    models,
+    datasets
+)

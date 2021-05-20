@@ -48,7 +48,8 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         correct += (results == batch['label']).sum()
         tot += outputs.shape[0]
 
-    print(f'Before starting accuracy is {correct / tot} with {correct} correct out of {tot} total entries')
+    print(
+        f'Before starting accuracy is {correct / tot} with {correct} correct out of {tot} total entries')
 
     for iteration in range(max_iterations):
         print('-'*5, f'Epoch {iteration+1}', '-'*5)
@@ -61,7 +62,7 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
                 if not torch.is_tensor(batch[key]):
                     continue
                 batch[key] = batch[key].to(device)
-            
+
             for param in model.parameters():
                 param.grad = None
 
@@ -70,7 +71,7 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
             loss.backward()
             optimizer.step()
 
-            totloss += loss.item() 
+            totloss += loss.item()
             c += 1
 
         model.eval()
@@ -88,4 +89,5 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
             correct += (results == batch['label']).sum()
             tot += outputs.shape[0]
 
-        print(f'Finished! Eval accuracy = {correct / tot} with {correct} correct out of {tot} total entries, avg loss = {totloss / c}')
+        print(
+            f'Finished! Eval accuracy = {correct / tot} with {correct} correct out of {tot} total entries, avg loss = {totloss / c}')
