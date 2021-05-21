@@ -3,7 +3,7 @@ import torch.nn as nn
 from tqdm import tqdm
 
 
-def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, split_amount=0.9):
+def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, split_amount=0.9, device="cpu"):
     def collate_fn(data):
         tensors, nontensors = dataset.__class__.get_properties()
 
@@ -21,8 +21,7 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         return data
 
     # TODO early stopping, model saving?
-
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    
     model.to(device)
 
     train, test = torch.utils.data.random_split(dataset, [round(split_amount*len(dataset)), len(

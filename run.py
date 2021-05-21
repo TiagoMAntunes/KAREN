@@ -92,7 +92,7 @@ def start(args):
         print(args)
         for m in models:
             framework.training.train(m, d, nn.CrossEntropyLoss(), torch.optim.Adam(
-                m.parameters()), max_iterations=args.max_epochs)
+                m.parameters()), max_iterations=args.max_epochs, device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda")
 
 
 if __name__ == '__main__':
