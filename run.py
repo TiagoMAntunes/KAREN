@@ -14,10 +14,8 @@ def add_model_params(parser):
 
     group.add_argument('--model', '-m', type=str,
                        help='Name of the model to run', nargs='+', required=True)
-    group.add_argument('--criterion', type=str,
-                       help='The loss function to be used in the model (default: CrossEntropyLoss)', default='CrossEntropyLoss')
-    group.add_argument('--optimizer', type=str,
-                       help='The optimization method to run on the model (default: Adam)', default='Adam')
+    group.add_argument('--lr', type=float,
+                       help='The learning rate to be applied on the optimizer', default=1e-3)
     group.add_argument('--dropout', type=float,
                        help='The dropout to apply on the model', default=0.1)
 
@@ -88,8 +86,6 @@ def start(args):
         args.out_feat = d.get_output_feat_size()
         models = [MODELS[x].make_model(args) for x in args.model]
 
-        # TODO criterion, optimizer
-        print(args)
         for m in models:
             framework.training.train(m, d, nn.CrossEntropyLoss(), torch.optim.Adam(
                 m.parameters()), max_iterations=args.max_epochs, device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda")
@@ -117,6 +113,12 @@ if __name__ == '__main__':
     # now parse them all
     args = parser.parse_args()
 
-    # TODO display a resume of the configuration that will be run
+    # remove duplicated models and datasets
+    args.model = list(set(args.model))
+    args.dataset = list(set(args.dataset))
+
+    print('*'*30, ' CONFIGURATION ', '*'*30)
+    print('\n'.join([f'{k:40}{v}' for k,v in sorted(list(vars(args).items()), key=lambda x: x[0])]))
+    print('*'*77,'\n')
 
     start(args)
