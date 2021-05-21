@@ -21,42 +21,29 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         return data
 
     # TODO early stopping, model saving?
-    
-    model.to(device)
 
-    train, test = torch.utils.data.random_split(dataset, [round(split_amount*len(dataset)), len(
-        dataset) - round(split_amount*len(dataset))], generator=torch.Generator().manual_seed(seed))
+    splitter = lambda x: [round(split_amount*len(x)), len(x) - round(split_amount*len(x))]
+    train, dev = torch.utils.data.random_split(dataset, splitter(dataset), generator=torch.Generator().manual_seed(seed))
+    train, test = torch.utils.data.random_split(train, splitter(train), generator=torch.Generator().manual_seed(seed))
 
     train = torch.utils.data.DataLoader(
         train, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
+    dev = torch.utils.data.DataLoader(
+        dev, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+
     test = torch.utils.data.DataLoader(
         test, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
-    model.eval()
-    tot = 0
-    correct = 0
-    for i, batch in enumerate(test):
-        for key in batch:
-            if not torch.is_tensor(batch[key]):
-                continue
-            batch[key] = batch[key].to(device)
-        outputs = model(batch)
-        results = outputs.argmax(dim=-1)
+    model.to(device)
 
-        correct += (results == batch['label']).sum()
-        tot += outputs.shape[0]
-
-    print(
-        f'Before starting accuracy is {correct / tot} with {correct} correct out of {tot} total entries')
-
-    for iteration in range(max_iterations):
-        print('-'*5, f'Epoch {iteration+1}', '-'*5)
+    for iteration in tqdm(range(max_iterations)):
 
         totloss = 0
         c = 0
+
         model.train()
-        for i, batch in tqdm(enumerate(train)):
+        for i, batch in enumerate(train):
             for key in batch:
                 if not torch.is_tensor(batch[key]):
                     continue
@@ -73,20 +60,25 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
             totloss += loss.item()
             c += 1
 
-        model.eval()
-        tot = 0
-        correct = 0
-        for i, batch in enumerate(test):
-            for key in batch:
-                if not torch.is_tensor(batch[key]):
-                    continue
-                batch[key] = batch[key].to(device)
+        correct, tot = eval(model, dev, device)
 
-            outputs = model(batch)
-            results = outputs.argmax(dim=-1)
+        print(f'Epoch #{iteration} accuracy = {correct / tot}')
 
-            correct += (results == batch['label']).sum()
-            tot += outputs.shape[0]
 
-        print(
-            f'Finished! Eval accuracy = {correct / tot} with {correct} correct out of {tot} total entries, avg loss = {totloss / c}')
+def eval(model, test, device):
+    model.eval()
+    tot = 0
+    correct = 0
+    for i, batch in enumerate(test):
+        for key in batch:
+            if not torch.is_tensor(batch[key]):
+                continue
+            batch[key] = batch[key].to(device)
+
+        outputs = model(batch)
+        results = outputs.argmax(dim=-1)
+
+        correct += (results == batch['label']).sum()
+        tot += outputs.shape[0]
+
+    return correct, tot
