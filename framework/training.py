@@ -1,7 +1,9 @@
 import torch
 import torch.nn as nn
 from tqdm import tqdm
-
+import copy
+import numpy as np
+import random
 
 def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, split_amount=0.9, device="cpu"):
     def collate_fn(data):
@@ -20,11 +22,15 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
 
         return data
 
-    # TODO early stopping, model saving?
+    torch.manual_seed(seed - 1)
+    np.random.seed(seed - 1)
+    random.seed(seed - 1)
+
+    # TODO early stopping
 
     splitter = lambda x: [round(split_amount*len(x)), len(x) - round(split_amount*len(x))]
     train, dev = torch.utils.data.random_split(dataset, splitter(dataset), generator=torch.Generator().manual_seed(seed))
-    train, test = torch.utils.data.random_split(train, splitter(train), generator=torch.Generator().manual_seed(seed))
+    train, test = torch.utils.data.random_split(train, splitter(train), generator=torch.Generator().manual_seed(seed+1))
 
     train = torch.utils.data.DataLoader(
         train, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
@@ -36,6 +42,9 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         test, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
     model.to(device)
+
+    best_score = float('-inf')
+    best_model = None
 
     for iteration in tqdm(range(max_iterations)):
 
@@ -61,10 +70,22 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
             c += 1
 
         correct, tot = eval(model, dev, device)
+        accuracy = correct / tot
+        print(f'Epoch #{iteration} accuracy = {accuracy:4f} loss = {totloss / c :5f}')
 
-        print(f'Epoch #{iteration} accuracy = {correct / tot}')
+        if accuracy > best_score:
+            print('New best model')
+            best_score = accuracy
+            best_model = copy.deepcopy(model)
+    
 
+    correct ,tot = eval(best_model, test, device)
+    # print('-'*45)
+    print(f'Evaluation accuracy: {correct / tot}')
+    # print('-'*45)
+        
 
+        
 def eval(model, test, device):
     model.eval()
     tot = 0
