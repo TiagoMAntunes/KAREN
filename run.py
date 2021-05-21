@@ -80,15 +80,16 @@ def get_specific_dataset_params(parser, args):
 
 def start(args):
     # Create all the required data to perform the computation
-    datasets = [DATASETS[x].make_dataset(args) for x in args.dataset]
+    datasets = [(x, DATASETS[x].make_dataset(args)) for x in args.dataset]
     for d in datasets:
-        args.in_feat = d.get_input_feat_size()
-        args.out_feat = d.get_output_feat_size()
-        models = [MODELS[x].make_model(args) for x in args.model]
+        args.in_feat = d[1].get_input_feat_size()
+        args.out_feat = d[1].get_output_feat_size()
+        models = [(x, MODELS[x].make_model(args)) for x in args.model]
 
         for m in models:
-            framework.training.train(m, d, nn.CrossEntropyLoss(), torch.optim.Adam(
-                m.parameters()), max_iterations=args.max_epochs, device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda")
+            print(f'Model={m[0]}\tDataset={d[0]}')
+            framework.training.train(m[1], d[1], nn.CrossEntropyLoss(), torch.optim.Adam(
+                m[1].parameters()), max_iterations=args.max_epochs, device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda")
 
 
 if __name__ == '__main__':
