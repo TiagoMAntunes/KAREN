@@ -1,4 +1,4 @@
-from .models import BaseModel
+from .base_model import BaseModel
 
 MODELS = {}
 
@@ -12,6 +12,7 @@ def RegisterModel(name):
             (...)
     """
     name = name.lower()
+    
     def register(cls):
         if name in MODELS:
             raise ValueError(f'Duplicate registry of model {name}')

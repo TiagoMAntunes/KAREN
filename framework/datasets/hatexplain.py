@@ -1,5 +1,5 @@
 import torch
-from .base_dataset import BaseDataset
+from ..base_dataset import BaseDataset
 import numpy as np
 from collections import Counter
 

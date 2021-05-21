@@ -57,10 +57,6 @@ class BaseDataset(torch.utils.data.Dataset):
         raise NotImplementedError(
             f'No len built-in method implemented for class {self.__class__.__name__}')
 
-    def preprocess(self):
-        raise NotImplementedError(
-            f'No available preprocessing for class {self.__class__.__name__}')
-
     @classmethod
     def get_properties(cls):
         """ 

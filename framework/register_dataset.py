@@ -1,4 +1,4 @@
-from .datasets import BaseDataset
+from .base_dataset import BaseDataset
 DATASETS = {}
 
 
