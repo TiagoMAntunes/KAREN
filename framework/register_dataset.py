@@ -1,4 +1,5 @@
 from .base_dataset import BaseDataset
+
 DATASETS = {}
 
 
@@ -19,7 +20,7 @@ def RegisterDataset(name):
             raise ValueError(
                 f'All models should be an extension of {BaseDataset.__name__}')
         DATASETS[name] = cls
-        print(f'Registered {cls}')
+        # print(f'Registered {cls}')
         return cls
 
     return register

@@ -18,6 +18,8 @@ def add_model_params(parser):
                        help='The loss function to be used in the model (default: CrossEntropyLoss)', default='CrossEntropyLoss')
     group.add_argument('--optimizer', type=str,
                        help='The optimization method to run on the model (default: Adam)', default='Adam')
+    group.add_argument('--dropout', type=float,
+                       help='The dropout to apply on the model', default=0.1)
 
 
 def add_dataset_params(parser):
@@ -44,11 +46,13 @@ def get_specific_model_params(parser, args):
 
     if invalid:
         print()
-        print('Invalid model selection: {}. Available models:\n- {}'.format(invalid, "\n- ".join(sorted(MODELS.keys()))))
+        print('Invalid model selection: {}. Available models:\n- {}'.format(invalid,
+              "\n- ".join(sorted(MODELS.keys()))))
         raise ValueError('Invalid model selection')
 
     for m in args.model:
         MODELS[m].add_required_arguments(group)
+
 
 def get_specific_dataset_params(parser, args):
     group = parser.add_argument_group()
@@ -58,18 +62,19 @@ def get_specific_dataset_params(parser, args):
 
     if invalid:
         print()
-        print('Invalid dataset selection: {}. Available datasets:\n- {}'.format(invalid, "\n- ".join(sorted(DATASETS.keys()))))
+        print('Invalid dataset selection: {}. Available datasets:\n- {}'.format(invalid,
+              "\n- ".join(sorted(DATASETS.keys()))))
         raise ValueError('Invalid dataset selection')
 
     # also check if the models can be run on the datasets
-    for model, dataset in ((x,y) for x in args.model for y in args.dataset):
+    for model, dataset in ((x, y) for x in args.model for y in args.dataset):
         r = set(MODELS[model].data_requirements())
         a = set(
-            ( lambda x,y: x+y ) (*DATASETS[dataset].get_properties())
+            (lambda x, y: x+y)(*DATASETS[dataset].get_properties())
         )
         if not r.issubset(a):
-            raise ValueError(f'Dataset {dataset} does not contain all model {model} requirements: {r.difference(a)} ')
-
+            raise ValueError(
+                f'Dataset {dataset} does not contain all model {model} requirements: {r.difference(a)} ')
 
     for d in args.dataset:
         DATASETS[d].add_required_arguments(group)
@@ -86,7 +91,9 @@ def start(args):
         # TODO criterion, optimizer
         print(args)
         for m in models:
-            framework.training.train(m, d, nn.CrossEntropyLoss(), torch.optim.Adam(m.parameters()), max_iterations=args.max_epochs)
+            framework.training.train(m, d, nn.CrossEntropyLoss(), torch.optim.Adam(
+                m.parameters()), max_iterations=args.max_epochs)
+
 
 if __name__ == '__main__':
 
@@ -109,7 +116,7 @@ if __name__ == '__main__':
 
     # now parse them all
     args = parser.parse_args()
-    
+
     # TODO display a resume of the configuration that will be run
 
     start(args)
