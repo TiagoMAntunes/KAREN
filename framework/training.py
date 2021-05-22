@@ -1,9 +1,11 @@
 import torch
 import torch.nn as nn
 from tqdm import tqdm
+import copy
+import numpy as np
+import random
 
-
-def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, split_amount=0.9):
+def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, split_amount=0.9, device="cpu"):
     def collate_fn(data):
         tensors, nontensors = dataset.__class__.get_properties()
 
@@ -20,44 +22,37 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
 
         return data
 
-    # TODO early stopping, model saving?
+    torch.manual_seed(seed - 1)
+    np.random.seed(seed - 1)
+    random.seed(seed - 1)
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model.to(device)
+    # TODO early stopping
 
-    train, test = torch.utils.data.random_split(dataset, [round(split_amount*len(dataset)), len(
-        dataset) - round(split_amount*len(dataset))], generator=torch.Generator().manual_seed(seed))
+    splitter = lambda x: [round(split_amount*len(x)), len(x) - round(split_amount*len(x))]
+    train, dev = torch.utils.data.random_split(dataset, splitter(dataset), generator=torch.Generator().manual_seed(seed))
+    train, test = torch.utils.data.random_split(train, splitter(train), generator=torch.Generator().manual_seed(seed+1))
 
     train = torch.utils.data.DataLoader(
         train, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
+    dev = torch.utils.data.DataLoader(
+        dev, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+
     test = torch.utils.data.DataLoader(
         test, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
-    model.eval()
-    tot = 0
-    correct = 0
-    for i, batch in enumerate(test):
-        for key in batch:
-            if not torch.is_tensor(batch[key]):
-                continue
-            batch[key] = batch[key].to(device)
-        outputs = model(batch)
-        results = outputs.argmax(dim=-1)
+    model.to(device)
 
-        correct += (results == batch['label']).sum()
-        tot += outputs.shape[0]
+    best_score = float('-inf')
+    best_model = None
 
-    print(
-        f'Before starting accuracy is {correct / tot} with {correct} correct out of {tot} total entries')
-
-    for iteration in range(max_iterations):
-        print('-'*5, f'Epoch {iteration+1}', '-'*5)
+    for iteration in tqdm(range(max_iterations)):
 
         totloss = 0
         c = 0
+
         model.train()
-        for i, batch in tqdm(enumerate(train)):
+        for i, batch in enumerate(train):
             for key in batch:
                 if not torch.is_tensor(batch[key]):
                     continue
@@ -74,20 +69,37 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
             totloss += loss.item()
             c += 1
 
-        model.eval()
-        tot = 0
-        correct = 0
-        for i, batch in enumerate(test):
-            for key in batch:
-                if not torch.is_tensor(batch[key]):
-                    continue
-                batch[key] = batch[key].to(device)
+        correct, tot = eval(model, dev, device)
+        accuracy = correct / tot
+        print(f'Epoch #{iteration} accuracy = {accuracy:4f} loss = {totloss / c :5f}')
 
-            outputs = model(batch)
-            results = outputs.argmax(dim=-1)
+        if accuracy > best_score:
+            print('New best model')
+            best_score = accuracy
+            best_model = copy.deepcopy(model)
+    
 
-            correct += (results == batch['label']).sum()
-            tot += outputs.shape[0]
+    correct ,tot = eval(best_model, test, device)
+    # print('-'*45)
+    print(f'Evaluation accuracy: {correct / tot}')
+    # print('-'*45)
+        
 
-        print(
-            f'Finished! Eval accuracy = {correct / tot} with {correct} correct out of {tot} total entries, avg loss = {totloss / c}')
+        
+def eval(model, test, device):
+    model.eval()
+    tot = 0
+    correct = 0
+    for i, batch in enumerate(test):
+        for key in batch:
+            if not torch.is_tensor(batch[key]):
+                continue
+            batch[key] = batch[key].to(device)
+
+        outputs = model(batch)
+        results = outputs.argmax(dim=-1)
+
+        correct += (results == batch['label']).sum()
+        tot += outputs.shape[0]
+
+    return correct, tot

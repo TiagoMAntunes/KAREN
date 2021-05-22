@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from .base_model import BaseModel
+from ..base_model import BaseModel
 from ..register_model import RegisterModel
 
 
@@ -22,10 +22,8 @@ class SoftmaxRegression(BaseModel):
 
     @staticmethod
     def add_required_arguments(parser):
-        group = parser.add_argument_group()
-
-        group.add_argument('--dropout', type=float, default=0.1)
-
+        pass 
+    
     @staticmethod
     def make_model(args):
         return SoftmaxRegression(args.in_feat, args.out_feat, dropout=args.dropout)
