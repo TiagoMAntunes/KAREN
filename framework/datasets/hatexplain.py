@@ -3,6 +3,8 @@ from ..base_dataset import BaseDataset
 import numpy as np
 from collections import Counter
 
+from gensim.parsing.preprocessing import remove_stopwords
+
 from ..register_dataset import RegisterDataset
 
 
@@ -24,7 +26,6 @@ class HateXPlain(BaseDataset):
         if not self.preprocessed:
             self.preprocess()
 
-        # return self.data.iloc[idx]
         return [self.data[x][idx] for x in self.__class__.get_properties()[0]] + [self.data[x][idx] for x in self.__class__.get_properties()[1]]
 
     def __len__(self):
@@ -108,7 +109,7 @@ class HateXPlain(BaseDataset):
 
         self.ids_to_idx = ids_to_idx
         self.label_to_idx = label_to_idx
-        self.word_to_idx = word_to_idx
+        self.words2idx = word_to_idx
         self.preprocessed = True
         self.len = len(data)
 
@@ -138,3 +139,9 @@ class HateXPlain(BaseDataset):
 
         group.add_argument('--url-hatexplain', type=str, default='https://raw.githubusercontent.com/hate-alert/HateXplain/master/Data/dataset.json')
         group.add_argument('--savename-hatexplain', type=str, default='HateXPlain.dataset')
+
+    def words_to_idx(self):
+        return self.words2idx
+
+    def get_vocab_size(self):
+        return len(self.words2idx)
