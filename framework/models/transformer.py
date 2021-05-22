@@ -17,9 +17,10 @@ class Transformer(BaseModel):
     def __init__(self, in_feat, out_feat, hidden_size, n_heads, n_layers, embeddings, dropout):
         super(Transformer, self).__init__()
         self.embeddings = embeddings
-        size = self.embeddings.weight.shape[-1] 
+        size = self.embeddings.weight.shape[-1]
 
-        encoder = nn.TransformerEncoderLayer(size, n_heads, dim_feedforward=hidden_size, dropout=dropout)
+        encoder = nn.TransformerEncoderLayer(
+            size, n_heads, dim_feedforward=hidden_size, dropout=dropout)
 
         self.model = nn.TransformerEncoder(encoder, n_layers)
         self.linear = nn.Linear(in_feat*size, out_feat)
@@ -45,13 +46,13 @@ class Transformer(BaseModel):
     @staticmethod
     def make_model(args):
         if args.embeddings is not None:
-            embeddings = nn.Embedding.from_pretrained(torch.tensor(args.embeddings))
+            embeddings = nn.Embedding.from_pretrained(
+                torch.tensor(args.embeddings))
         else:
             embeddings = nn.Embedding(args.vocab_size, args.embedding_dim)
 
-        m =  Transformer(args.in_feat, args.out_feat, args.transformer_hidden_size, args.transformer_n_heads, args.transformer_n_layers, embeddings, args.dropout)
-        print(m)
-        return m
+        return Transformer(args.in_feat, args.out_feat, args.transformer_hidden_size,
+                        args.transformer_n_heads, args.transformer_n_layers, embeddings, args.dropout)
 
     @staticmethod
     def data_requirements():
