@@ -26,9 +26,9 @@ class Transformer(BaseModel):
 
     def forward(self, data):
         res = self.embeddings(data['tokens']).float()
-        mask = ~data['mask'].bool().T
-        out = self.model(res, src_key_padding_mask=mask)
-        out = out.reshape(out.shape[0], -1)
+        res = res.reshape(res.shape[1], res.shape[0], res.shape[2])
+        out = self.model(res, src_key_padding_mask=~data['mask'])
+        out = out.reshape(out.shape[1], -1)
         return self.linear(out)
 
     @staticmethod
