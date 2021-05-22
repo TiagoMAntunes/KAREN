@@ -99,7 +99,7 @@ class HateXPlain(BaseDataset):
         self.data = {
             'id': np.array(ids, dtype=int),
             'tokens': np.array(tokens, dtype=int),
-            'padding': np.array(padding_mask, dtype=bool),
+            'mask': np.array(padding_mask, dtype=bool),
             'label': np.array([label_to_idx[x] for x in label], dtype=int),
             'annotator_labels': np.array([[label_to_idx[y] for y in x] for x in annotator_labels], dtype=int),
             'annotator_targets': np.array(annotator_targets, dtype=object),
@@ -114,7 +114,7 @@ class HateXPlain(BaseDataset):
 
     @classmethod
     def get_properties(cls):
-        return ['id', 'tokens', 'padding', 'label', 'annotator_labels'], ['annotator_targets', 'rationales']
+        return ['id', 'tokens', 'mask', 'label', 'annotator_labels'], ['annotator_targets', 'rationales']
 
     def get_input_feat_size(self):
         if not self.preprocessed:
