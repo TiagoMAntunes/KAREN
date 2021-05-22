@@ -68,10 +68,13 @@ class Glove(BaseEmbedding):
 
 
                 # save each one to .vocab and .embeddings
-                embeddings = np.array(embeddings)
                 with open(filename + '.vocab', 'w') as f:
                     f.write(' '.join(vocab))
+                del vocab
+                
+                embeddings = np.array(embeddings)
                 np.save(filename + '.embeddings', embeddings)
+                del embeddings
 
     @classmethod
     def get(cls, dim=200):
