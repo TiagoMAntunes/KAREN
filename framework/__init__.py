@@ -1,4 +1,5 @@
 from . import (
     models,
-    datasets
+    datasets,
+    toolkit,
 )

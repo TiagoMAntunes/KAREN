@@ -5,7 +5,7 @@ import copy
 import numpy as np
 import random
 
-def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, split_amount=0.9, device="cpu"):
+def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, split_amount=0.9, device="cpu", batch_size=256):
     def collate_fn(data):
         tensors, nontensors = dataset.__class__.get_properties()
 
@@ -33,13 +33,13 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
     train, test = torch.utils.data.random_split(train, splitter(train), generator=torch.Generator().manual_seed(seed+1))
 
     train = torch.utils.data.DataLoader(
-        train, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+        train, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
     dev = torch.utils.data.DataLoader(
-        dev, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+        dev, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
     test = torch.utils.data.DataLoader(
-        test, batch_size=64, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+        test, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True)
 
     model.to(device)
 

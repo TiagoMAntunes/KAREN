@@ -3,6 +3,8 @@ from ..base_dataset import BaseDataset
 import numpy as np
 from collections import Counter
 
+from gensim.parsing.preprocessing import remove_stopwords
+
 from ..register_dataset import RegisterDataset
 
 
@@ -24,7 +26,6 @@ class HateXPlain(BaseDataset):
         if not self.preprocessed:
             self.preprocess()
 
-        # return self.data.iloc[idx]
         return [self.data[x][idx] for x in self.__class__.get_properties()[0]] + [self.data[x][idx] for x in self.__class__.get_properties()[1]]
 
     def __len__(self):
@@ -99,7 +100,7 @@ class HateXPlain(BaseDataset):
         self.data = {
             'id': np.array(ids, dtype=int),
             'tokens': np.array(tokens, dtype=int),
-            'padding': np.array(padding_mask, dtype=bool),
+            'mask': np.array(padding_mask, dtype=bool),
             'label': np.array([label_to_idx[x] for x in label], dtype=int),
             'annotator_labels': np.array([[label_to_idx[y] for y in x] for x in annotator_labels], dtype=int),
             'annotator_targets': np.array(annotator_targets, dtype=object),
@@ -108,13 +109,13 @@ class HateXPlain(BaseDataset):
 
         self.ids_to_idx = ids_to_idx
         self.label_to_idx = label_to_idx
-        self.word_to_idx = word_to_idx
+        self.words2idx = word_to_idx
         self.preprocessed = True
         self.len = len(data)
 
     @classmethod
     def get_properties(cls):
-        return ['id', 'tokens', 'padding', 'label', 'annotator_labels'], ['annotator_targets', 'rationales']
+        return ['id', 'tokens', 'mask', 'label', 'annotator_labels'], ['annotator_targets', 'rationales']
 
     def get_input_feat_size(self):
         if not self.preprocessed:
@@ -138,3 +139,9 @@ class HateXPlain(BaseDataset):
 
         group.add_argument('--url-hatexplain', type=str, default='https://raw.githubusercontent.com/hate-alert/HateXplain/master/Data/dataset.json')
         group.add_argument('--savename-hatexplain', type=str, default='HateXPlain.dataset')
+
+    def words_to_idx(self):
+        return self.words2idx
+
+    def get_vocab_size(self):
+        return len(self.words2idx)
