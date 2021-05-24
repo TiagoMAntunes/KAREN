@@ -3,7 +3,6 @@ from ..base_dataset import BaseDataset
 import numpy as np
 from collections import Counter
 
-from gensim.parsing.preprocessing import remove_stopwords
 
 from ..register_dataset import RegisterDataset
 
