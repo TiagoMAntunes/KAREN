@@ -14,6 +14,7 @@ class BiLSTM(BaseModel):
         self,
         out_feat,
         hidden_dim,
+        linear_size,
         embeddings,
         n_layers,
         dropout,
@@ -37,10 +38,10 @@ class BiLSTM(BaseModel):
         self.linears = nn.Sequential(
             nn.Dropout(dropout),
             nn.ReLU(),
-            nn.Linear(hidden_dim * self.number_of_directions, out_feat * 2),
+            nn.Linear(hidden_dim * self.number_of_directions, linear_size),
             nn.Dropout(dropout),
             nn.ReLU(),
-            nn.Linear(out_feat * 2, out_feat),
+            nn.Linear(linear_size, out_feat),
         )
 
     def forward(self, data):
@@ -55,12 +56,8 @@ class BiLSTM(BaseModel):
     def add_required_arguments(parser):
         group = parser.add_argument_group()
 
-        group.add_argument(
-            "--bilstm-hidden-size",
-            type=int,
-            default=64,
-            help="BiLSTM hidden size",
-        )
+        group.add_argument("--bilstm-hidden-size", type=int, default=64, help="BiLSTM hidden size")
+        group.add_argument("--bilstm-linear-size", type=int, default=8, help="Linear hidden size")
         group.add_argument("--bilstm-n-layers", type=int, default=2, help="Number of layers in the BiLSTM")
         group.add_argument("--bilstm-dropout-hidden", type=float, default=0.5, help="Dropout between the BiLSTM layers")
         group.add_argument("--bilstm-bidirectional", type=bool, default=True, help="Train BiLSTM or LSTM")
@@ -75,6 +72,7 @@ class BiLSTM(BaseModel):
         return BiLSTM(
             args.out_feat,
             args.bilstm_hidden_size,
+            args.bilstm_linear_size,
             embeddings,
             args.bilstm_n_layers,
             args.dropout,
