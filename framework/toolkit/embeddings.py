@@ -54,8 +54,7 @@ class Glove(BaseEmbedding):
             print('Transforming data into binary format')
             for name in tuple(filter(lambda x: x.endswith('.txt'), os.listdir(NAME))):
                 filename = NAME + name
-                vocab = []
-                embeddings = []
+                embeddings = {}
                 dimension = int(name.split('.')[3][:-1])
                 with open(filename, encoding='utf-8') as f:
                     for line in f:
@@ -63,16 +62,13 @@ class Glove(BaseEmbedding):
                         if len(line) < dimension + 1:
                             # FIXME Some unicode character was giving trouble 
                             continue 
-                        vocab.append(line[0])
-                        embeddings.append(list(map(float, line[1:])))
-
+                        embeddings[line[0]] = np.asarray(line[1:], dtype=np.float32)
 
                 # save each one to .vocab and .embeddings
                 with open(filename + '.vocab', 'w') as f:
-                    f.write(' '.join(vocab))
-                del vocab
+                    f.write(' '.join(embeddings.keys()))
                 
-                embeddings = np.array(embeddings)
+                embeddings = np.array(list(embeddings.values()), dtype=np.float32)
                 np.save(filename + '.embeddings', embeddings)
                 del embeddings
 
