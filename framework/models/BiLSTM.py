@@ -34,16 +34,21 @@ class BiLSTM(BaseModel):
             bidirectional=bidirectional,
         )
         self.number_of_directions = 2 if bidirectional else 1
-        self.fc1 = nn.Linear(hidden_dim * self.number_of_directions, out_feat)
-        self.dropout = nn.Dropout(dropout)
+        self.linears = nn.Sequential(
+            nn.Dropout(dropout),
+            nn.ReLU(),
+            nn.Linear(hidden_dim * self.number_of_directions, out_feat * 2),
+            nn.Dropout(dropout),
+            nn.ReLU(),
+            nn.Linear(out_feat * 2, out_feat),
+        )
 
     def forward(self, data):
-        shape = data["mask"].shape
-        embedded = self.embedding(data["tokens"]).view(shape[0], shape[1], -1)
-        out, (hidden, cell) = self.lstm(embedded.float())
+        shape = data["tokens"].shape
+        embedded = self.embedding(data["tokens"]).reshape(shape[0], shape[1], -1).float()
+        out, (hidden, cell) = self.lstm(embedded)
         out = out[:, 0, :]
-        out = self.dropout(out)
-        out = self.fc1(out)
+        out = self.linears(out)
         return out
 
     @staticmethod
@@ -56,7 +61,7 @@ class BiLSTM(BaseModel):
             default=64,
             help="BiLSTM hidden size",
         )
-        group.add_argument("--bilstm-n-layers", type=int, default=1, help="Number of layers in the BiLSTM")
+        group.add_argument("--bilstm-n-layers", type=int, default=2, help="Number of layers in the BiLSTM")
         group.add_argument("--bilstm-dropout-hidden", type=float, default=0.5, help="Dropout between the BiLSTM layers")
         group.add_argument("--bilstm-bidirectional", type=bool, default=True, help="Train BiLSTM or LSTM")
 
