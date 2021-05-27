@@ -5,26 +5,6 @@ import math
 from ..base_model import BaseModel
 from ..register_model import RegisterModel
 
-class PositionalEncoding(nn.Module):
-
-    def __init__(self, d_model, dropout=0.1, max_len=5000):
-        super(PositionalEncoding, self).__init__()
-        self.dropout = nn.Dropout(p=dropout)
-
-        pe = torch.zeros(max_len, d_model)
-        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
-        div_term_sin = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
-        div_term_cos = torch.exp(torch.arange(1, d_model, 2).float() * (-math.log(10000.0) / d_model))
-        pe[:, 0::2] = torch.sin(position * div_term_sin)
-        pe[:, 1::2] = torch.cos(position * div_term_cos)
-        pe = pe.unsqueeze(0).transpose(0, 1)
-        self.register_buffer('pe', pe)
-
-    def forward(self, x):
-        x = x + self.pe[:x.size(0), :]
-        return self.dropout(x)
-
-
 @RegisterModel('Transformer')
 class Transformer(BaseModel):
     """
@@ -39,8 +19,6 @@ class Transformer(BaseModel):
         super(Transformer, self).__init__()
         self.embeddings = embeddings
         size = self.embeddings.weight.shape[-1]
-        
-        self.pos_encoding = PositionalEncoding(size, dropout=dropout, max_len=batch_size)
 
         encoder = nn.TransformerEncoderLayer(
             size, n_heads, dim_feedforward=hidden_size, dropout=dropout)
@@ -51,7 +29,6 @@ class Transformer(BaseModel):
     def forward(self, data):
         src = self.embeddings(data['tokens']).float()
         src = src.reshape(src.shape[1], src.shape[0], src.shape[2])
-        src = self.pos_encoding(src)
         out = self.model(src, src_key_padding_mask=~data['mask'])
         out = out.reshape(out.shape[1], -1)
         return self.linear(out)
