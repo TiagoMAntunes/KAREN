@@ -2,3 +2,4 @@
 from .softmax_regression import SoftmaxRegression
 from .transformer import Transformer
 from .BiLSTM import BiLSTM
+from .CNN import CNN
