@@ -47,7 +47,8 @@ class BiLSTM(BaseModel):
     def forward(self, data):
         shape = data["tokens"].shape
         embedded = self.embedding(data["tokens"]).reshape(shape[0], shape[1], -1)
-        out, (hidden, cell) = self.lstm(embedded)
+        self.lstm.flatten_parameters()
+        out, _ = self.lstm(embedded)
         out = out[:, 0, :]
         out = self.linears(out)
         return out
