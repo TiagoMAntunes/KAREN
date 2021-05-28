@@ -117,9 +117,9 @@ def start(args):
             args.embeddings = values[indices]
 
         models = [(x, MODELS[x].make_model(args)) for x in args.model]
-
+        
         for m in models:
-            print(f'Model={m[0]}\tDataset={d[0]}')
+            print(f'\nStarting training of (Model={m[0]} Dataset={d[0]})')
             framework.training.train(m[1], d[1], nn.CrossEntropyLoss(), torch.optim.Adam(
                 m[1].parameters()), max_iterations=args.max_epochs, device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda", batch_size=args.batch_size)
 
