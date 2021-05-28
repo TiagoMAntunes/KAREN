@@ -11,35 +11,41 @@ class NetLSTM(BaseModel):
     This is a template file of a model implementation
     """
 
-    def __init__(self, out_feat, hidden_dim, embeddings, n_layers, dropout, dropout_lstm):
+    def __init__(self, out_feat, hidden_size, embeddings, n_layers, dropout, dropout_lstm):
         super(NetLSTM, self).__init__()
-
         self.word_embeddings = embeddings
+        input_size = self.word_embeddings.weight.shape[-1]
+
         self.lstm = nn.LSTM(
-            self.word_embeddings.weight.shape[-1],
-            hidden_dim,
-            dropout=dropout_lstm,
-            bidirectional=True,
+            input_size,
+            hidden_size,
             num_layers=n_layers,
             batch_first=True,
+            dropout=dropout_lstm,
+            bidirectional=True,
         )
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(dropout)
-        self.hidden2label = nn.Linear(2 * n_layers * hidden_dim, out_feat)
+
+        self.maxpool = nn.AdaptiveMaxPool1d(1)
+        self.averagepool = nn.AdaptiveAvgPool1d(1)
+
+        self.hidden2label = nn.Sequential(
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(2 * n_layers * hidden_size, out_feat),
+        )
 
     def forward(self, text):
         shape = text["tokens"].shape
-        embeds = self.word_embeddings(text["tokens"]).reshape(shape[0], shape[1], -1)
+        embedded = self.word_embeddings(text["tokens"]).reshape(shape[0], shape[1], -1)
 
         self.lstm.flatten_parameters()
-        lstm_out, _ = self.lstm(embeds)
+        lstm_out, _ = self.lstm(embedded)
 
-        max_pool = F.adaptive_max_pool1d(lstm_out.permute(0, 2, 1), 1).reshape(shape[0], -1)
-        avg_pool = F.adaptive_avg_pool1d(lstm_out.permute(0, 2, 1), 1).reshape(shape[0], -1)
+        max_pool = self.maxpool(lstm_out.permute(0, 2, 1)).reshape(shape[0], -1)
+        avg_pool = self.averagepool(lstm_out.permute(0, 2, 1)).reshape(shape[0], -1)
         outp = torch.cat([max_pool, avg_pool], dim=1)
 
-        y = self.dropout(self.relu(outp))
-        y = self.hidden2label(y)
+        y = self.hidden2label(outp)
         return y
 
     @staticmethod
@@ -47,7 +53,6 @@ class NetLSTM(BaseModel):
         group = parser.add_argument_group()
 
         group.add_argument("--netlstm-hidden-size", type=int, default=64, help="BiLSTM hidden size")
-        group.add_argument("--netlstm-linear-size", type=int, default=8, help="Linear hidden size")
         group.add_argument("--netlstm-n-layers", type=int, default=2, help="Number of layers in the BiLSTM")
         group.add_argument("--netlstm-dropout-hidden", type=float, default=0.5, help="Dropout between BiLSTM layers")
 
