@@ -43,46 +43,50 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
 
     model.to(device)
 
-    best_score = float('-inf')
+    best_score = 0
     best_model = None
+    display_freq = 10
 
-    for iteration in tqdm(range(max_iterations)):
+    for iteration in range(max_iterations):
 
         totloss = 0
         c = 0
 
         model.train()
-        for i, batch in enumerate(train):
-            for key in batch:
-                if not torch.is_tensor(batch[key]):
-                    continue
-                batch[key] = batch[key].to(device)
+        with tqdm(train) as progress:
+            for i, batch in enumerate(progress):
+                for key in batch:
+                    if not torch.is_tensor(batch[key]):
+                        continue
+                    batch[key] = batch[key].to(device)
 
-            for param in model.parameters():
-                param.grad = None
+                for param in model.parameters():
+                    param.grad = None
 
-            outputs = model(batch)
-            loss = loss_fn(outputs, batch['label'])
-            loss.backward()
-            optimizer.step()
+                outputs = model(batch)
+                loss = loss_fn(outputs, batch['label'])
+                loss.backward()
+                optimizer.step()
 
-            totloss += loss.item()
-            c += 1
+                totloss += loss.item()
+                c += 1
+                
+                if i % display_freq == 0:
+                    progress.set_postfix({'loss': totloss / (i + 1)})
+
 
         correct, tot = eval(model, dev, device)
         accuracy = correct / tot
-        print(f'Epoch #{iteration} accuracy = {accuracy:4f} loss = {totloss / c :5f}')
+        print(f'Epoch #{iteration + 1} validation accuracy = {accuracy:4f}')
 
         if accuracy > best_score:
-            print('New best model')
+            print(f'Accuracy increased from {best_score} to {accuracy}, saving model.')
             best_score = accuracy
             best_model = copy.deepcopy(model)
     
 
     correct ,tot = eval(best_model, test, device)
-    # print('-'*45)
-    print(f'Evaluation accuracy: {correct / tot}')
-    # print('-'*45)
+    print(f'\nTest accuracy: {correct / tot}')
         
 
         
