@@ -26,7 +26,7 @@ class CNN(BaseModel):
         self.relu = nn.ReLU()
 
     def forward(self, text):
-        x = self.embedding(text["tokens"]).unsqueeze(1).float()
+        x = self.embedding(text["tokens"]).unsqueeze(1)
 
         x = [self.relu(conv(x)).squeeze(-1) for conv in self.convs]
         x = [F.max_pool1d(conv, conv.shape[-1]).squeeze(-1) for conv in x]
