@@ -139,12 +139,15 @@ if __name__ == '__main__':
     args, _ = parser.parse_known_args()
 
     # Now that we know how the model will run, we need to find out specific parameters for the model and dataset (if available)
-
+    args.model = [x.lower() for x in args.model]
+    args.dataset = [x.lower() for x in args.dataset]
     get_specific_model_params(parser, args)
     get_specific_dataset_params(parser, args)
 
     # now parse them all
     args = parser.parse_args()
+    args.model = [x.lower() for x in args.model]
+    args.dataset = [x.lower() for x in args.dataset]
 
     # remove duplicated models and datasets
     args.model = list(set(args.model))
