@@ -30,7 +30,7 @@ class RNN(BaseModel):
             input_size=self.embedding.weight.shape[-1],
             hidden_size=hidden_dim,
             num_layers=n_layers,
-            non_linearity=non_linearity,
+            nonlinearity=non_linearity,
             bias=True,
             batch_first=True,
             dropout=rnn_dropout,
@@ -64,6 +64,7 @@ class RNN(BaseModel):
         group.add_argument("--rnn-n-layers", type=int, default=2, help="Number of layers in the rnn")
         group.add_argument("--rnn-dropout-hidden", type=float, default=0.5, help="Dropout between the rnn layers")
         group.add_argument("--rnn-bidirectional", type=bool, default=True, help="Train Bidirectional RNN or RNN")
+        group.add_argument("--rnn-non-linearity", type=str, default="tanh", help="Non linearity function used in RNN, must be one of 'tanh' and 'relu'")
 
     @staticmethod
     def make_model(args):
@@ -78,8 +79,10 @@ class RNN(BaseModel):
             args.rnn_linear_size,
             embeddings,
             args.rnn_n_layers,
+            args.rnn_non_linearity,
             args.dropout,
             args.rnn_dropout_hidden,
+            args.rnn_bidirectional
         )
 
     @staticmethod
