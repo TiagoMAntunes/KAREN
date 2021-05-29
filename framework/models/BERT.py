@@ -22,8 +22,9 @@ class BERT(BaseModel):
         self.bert = BertForSequenceClassification.from_pretrained(self.cased, num_labels=num_labels)
 
     def forward(self, data):
-        inputs = self.tokenizer(data, return_tensors="pt") # here data is raw text
+        inputs = self.tokenizer(data['text'], padding=True, return_tensors="pt").to(data['tokens'].device)
         outputs = self.bert(**inputs)
+        del inputs # this code uses too much memory so it's better this way
         logits = outputs.logits
         return logits
 
@@ -32,21 +33,15 @@ class BERT(BaseModel):
         group = parser.add_argument_group()
 
         group.add_argument("--bert_cased", type=bool, default=False, help="whether to use cased BERT")
-        group.add_argument("--bert_num_labels", type=int, default=2, help="number of output label classes for BERT")
 
 
     @staticmethod
     def make_model(args):
-        if args.embeddings is not None:
-            embeddings = nn.Embedding.from_pretrained(torch.tensor(args.embeddings))
-        else:
-            embeddings = nn.Embedding(args.vocab_size, args.embedding_dim)
-
         return BERT(
-            args.bert_num_labels,
+            args.out_feat,
             args.bert_cased,
         )
 
     @staticmethod
     def data_requirements():
-        return ["tokens", "mask"]
+        return ["tokens", "mask", 'text']

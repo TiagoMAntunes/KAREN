@@ -13,7 +13,7 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
         tensors_data = [[x[i] for x in tensors_data]
                         for i in range(len(tensors_data[0]))]
 
-        nontensors_data = [x[len(tensors) + 1:] for x in data]
+        nontensors_data = [x[len(tensors):] for x in data]
         nontensors_data = [[x[i] for x in nontensors_data]
                            for i in range(len(nontensors_data[0]))]
 
