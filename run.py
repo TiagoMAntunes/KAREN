@@ -5,6 +5,8 @@ from framework.register_embeddings import EMBEDDINGS
 
 import torch
 import torch.nn as nn
+import numpy as np
+import random
 import argparse
 from pprint import pprint
 
@@ -40,6 +42,8 @@ def add_iteration_params(parser):
                        help='The number of iterations to run the optimization')
     group.add_argument('--batch-size', default=256, type=int,
                        help='Batch size used in the dataloaders')
+    group.add_argument('--seed', default=12345, type=int,
+                       help='Seed for reproducibility')
 
 
 def get_specific_model_params(parser, args):
@@ -117,14 +121,27 @@ def start(args):
             args.embeddings = values[indices]
 
         models = [(x, MODELS[x].make_model(args)) for x in args.model]
-        
+
         for m in models:
             print(f'\nStarting training of (Model={m[0]} Dataset={d[0]})')
             framework.training.train(m[1], d[1], nn.CrossEntropyLoss(), torch.optim.Adam(
-                m[1].parameters()), max_iterations=args.max_epochs, device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda", batch_size=args.batch_size)
+                m[1].parameters()), max_iterations=args.max_epochs, device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda", batch_size=args.batch_size, seed=args.seed)
 
+
+def reproducible(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)  # if you are using multi-GPU.
+    np.random.seed(seed)  # Numpy module.
+    random.seed(seed)  # Python random module.
+    torch.manual_seed(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    import os
+    os.environ['PYTHONHASHSEED'] = str(seed)
 
 if __name__ == '__main__':
+    reproducible(12345)
 
     # get arguments
     parser = argparse.ArgumentParser()
@@ -137,6 +154,7 @@ if __name__ == '__main__':
     add_iteration_params(parser)
 
     args, _ = parser.parse_known_args()
+
 
     # Now that we know how the model will run, we need to find out specific parameters for the model and dataset (if available)
     args.model = [x.lower() for x in args.model]
