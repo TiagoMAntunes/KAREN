@@ -5,7 +5,7 @@ import copy
 import numpy as np
 import random
 
-def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, split_amount=0.9, device="cpu", batch_size=256):
+def train(model, dataset, loss_fn, optimizer, scheduler, max_iterations=30, seed=12345, split_amount=0.9, device="cpu", batch_size=256):
     def collate_fn(data):
         tensors, nontensors = dataset.__class__.get_properties()
 
@@ -71,8 +71,9 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
                 c += 1
                 
                 if i % display_freq == 0:
-                    progress.set_postfix({'loss': totloss / (i + 1)})
+                    progress.set_postfix({'loss': totloss / (i + 1), 'lr': round(scheduler.get_lr()[0], 6)})
 
+        # scheduler.step()
 
         correct, tot = eval(model, dev, device)
         accuracy = correct / tot

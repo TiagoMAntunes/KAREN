@@ -124,8 +124,14 @@ def start(args):
 
         for m in models:
             print(f'\nStarting training of (Model={m[0]} Dataset={d[0]})')
-            framework.training.train(m[1], d[1], nn.CrossEntropyLoss(), torch.optim.Adam(
-                m[1].parameters()), max_iterations=args.max_epochs, device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda", batch_size=args.batch_size, seed=args.seed)
+
+            criterion = nn.CrossEntropyLoss()
+            optimizer = torch.optim.AdamW(m[1].parameters(), lr=args.lr)
+            scheduler = torch.optim.lr_scheduler.StepLR(
+                optimizer, step_size=7, gamma=0.1)
+
+            framework.training.train(m[1], d[1], criterion, optimizer, scheduler, max_iterations=args.max_epochs,
+                                     device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda", batch_size=args.batch_size, seed=args.seed)
 
 
 def reproducible(seed):
@@ -139,6 +145,7 @@ def reproducible(seed):
     torch.backends.cudnn.deterministic = True
     import os
     os.environ['PYTHONHASHSEED'] = str(seed)
+
 
 if __name__ == '__main__':
     reproducible(12345)
@@ -154,7 +161,6 @@ if __name__ == '__main__':
     add_iteration_params(parser)
 
     args, _ = parser.parse_known_args()
-
 
     # Now that we know how the model will run, we need to find out specific parameters for the model and dataset (if available)
     args.model = [x.lower() for x in args.model]
