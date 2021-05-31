@@ -107,6 +107,7 @@ def start(args):
         args.in_feat = d[1].get_input_feat_size()
         args.out_feat = d[1].get_output_feat_size()
         args.vocab_size = d[1].get_vocab_size()
+        args.device ="cpu" if args.cpu or not torch.cuda.is_available() else "cuda"
 
         if vocab:
             # pretrained embeddings, now needs to get the vocab list conversion
@@ -121,7 +122,7 @@ def start(args):
         for m in models:
             print(f'\nStarting training of (Model={m[0]} Dataset={d[0]})')
             framework.training.train(m[1], d[1], nn.CrossEntropyLoss(), torch.optim.Adam(
-                m[1].parameters()), max_iterations=args.max_epochs, device="cpu" if args.cpu or not torch.cuda.is_available() else "cuda", batch_size=args.batch_size)
+                m[1].parameters()), max_iterations=args.max_epochs, device=args.device, batch_size=args.batch_size)
 
 
 if __name__ == '__main__':
