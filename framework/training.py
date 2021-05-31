@@ -5,7 +5,7 @@ import copy
 import numpy as np
 import random
 
-def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, split_amount=0.9, device="cpu", batch_size=256):
+def train(model, dataset, loss_fn, optimizer, scheduler, max_iterations=30, seed=12345, split_amount=0.9, device="cpu", batch_size=256):
     
     requirements = set(model.data_requirements() + ['label'])
     def collate_fn(data):
@@ -25,24 +25,24 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
 
         return data
 
-    torch.manual_seed(seed - 1)
-    np.random.seed(seed - 1)
-    random.seed(seed - 1)
+    def _init_fn(i):
+        # Reproducibility
+        np.random.seed(seed + i)
 
     # TODO early stopping
 
     splitter = lambda x: [round(split_amount*len(x)), len(x) - round(split_amount*len(x))]
-    train, dev = torch.utils.data.random_split(dataset, splitter(dataset), generator=torch.Generator().manual_seed(seed))
-    train, test = torch.utils.data.random_split(train, splitter(train), generator=torch.Generator().manual_seed(seed+1))
+    train, dev = torch.utils.data.random_split(dataset, splitter(dataset))
+    train, test = torch.utils.data.random_split(train, splitter(train))
 
     train = torch.utils.data.DataLoader(
-        train, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+        train, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True, worker_init_fn=_init_fn)
 
     dev = torch.utils.data.DataLoader(
-        dev, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+        dev, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True, worker_init_fn=_init_fn)
 
     test = torch.utils.data.DataLoader(
-        test, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True)
+        test, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True, worker_init_fn=_init_fn)
 
     model.to(device)
 
@@ -51,7 +51,6 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
     display_freq = 10
 
     for iteration in range(max_iterations):
-
         totloss = 0
         c = 0
 
@@ -75,8 +74,9 @@ def train(model, dataset, loss_fn, optimizer, max_iterations=30, seed=12345, spl
                 c += 1
                 
                 if i % display_freq == 0:
-                    progress.set_postfix({'loss': totloss / (i + 1)})
+                    progress.set_postfix({'loss': totloss / (i + 1), 'lr': round(scheduler.get_last_lr()[0], 6)})
 
+        # scheduler.step()
 
         correct, tot = eval(model, dev, device)
         accuracy = correct / tot
