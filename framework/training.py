@@ -6,6 +6,8 @@ import numpy as np
 import random
 
 def train(model, dataset, loss_fn, optimizer, scheduler, max_iterations=30, seed=12345, split_amount=0.9, device="cpu", batch_size=256):
+    
+    requirements = set(model.data_requirements() + ['label'])
     def collate_fn(data):
         tensors, nontensors = dataset.__class__.get_properties()
 
@@ -13,12 +15,13 @@ def train(model, dataset, loss_fn, optimizer, scheduler, max_iterations=30, seed
         tensors_data = [[x[i] for x in tensors_data]
                         for i in range(len(tensors_data[0]))]
 
-        nontensors_data = [x[len(tensors) + 1:] for x in data]
+        nontensors_data = [x[len(tensors):] for x in data]
         nontensors_data = [[x[i] for x in nontensors_data]
                            for i in range(len(nontensors_data[0]))]
 
-        data = {**{name: torch.tensor(x) for name, x in zip(tensors, tensors_data)}, **{
-            name: x for name, x in zip(nontensors, nontensors_data)}}
+        # filter now the ones that will be used by the model
+        data = {**{name: torch.tensor(x) for name, x in zip(tensors, tensors_data) if name in requirements}, **{
+            name: x for name, x in zip(nontensors, nontensors_data) if name in requirements}}
 
         return data
 
@@ -71,7 +74,7 @@ def train(model, dataset, loss_fn, optimizer, scheduler, max_iterations=30, seed
                 c += 1
                 
                 if i % display_freq == 0:
-                    progress.set_postfix({'loss': totloss / (i + 1), 'lr': round(scheduler.get_lr()[0], 6)})
+                    progress.set_postfix({'loss': totloss / (i + 1), 'lr': round(scheduler.get_last_lr()[0], 6)})
 
         # scheduler.step()
 

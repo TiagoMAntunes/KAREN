@@ -88,6 +88,8 @@ class HateXPlain(BaseDataset):
         max_size = max(map(lambda x: len(x), tokens))
         padding_mask = [[True] * len(x) + [False]
                         * (max_size - len(x)) for x in tokens]
+        
+        text = [' '.join(x) for x in tokens]
         tokens = [list(map(lambda y: word_to_idx[y], x)) + [0]
                   * (max_size - len(x)) for x in tokens]
 
@@ -103,7 +105,8 @@ class HateXPlain(BaseDataset):
             'label': np.array([label_to_idx[x] for x in label], dtype=int),
             'annotator_labels': np.array([[label_to_idx[y] for y in x] for x in annotator_labels], dtype=int),
             'annotator_targets': np.array(annotator_targets, dtype=object),
-            'rationales': np.array(rationales, dtype=object)
+            'rationales': np.array(rationales, dtype=object),
+            'text': text
         }
 
         self.ids_to_idx = ids_to_idx
@@ -114,7 +117,7 @@ class HateXPlain(BaseDataset):
 
     @classmethod
     def get_properties(cls):
-        return ['id', 'tokens', 'mask', 'label', 'annotator_labels'], ['annotator_targets', 'rationales']
+        return ['id', 'tokens', 'mask', 'label', 'annotator_labels'], ['annotator_targets', 'rationales', 'text']
 
     def get_input_feat_size(self):
         if not self.preprocessed:
