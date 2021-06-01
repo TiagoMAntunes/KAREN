@@ -34,15 +34,18 @@ def train(model, dataset, loss_fn, optimizer, scheduler, max_iterations=30, seed
     splitter = lambda x: [round(split_amount*len(x)), len(x) - round(split_amount*len(x))]
     train, dev = torch.utils.data.random_split(dataset, splitter(dataset))
     train, test = torch.utils.data.random_split(train, splitter(train))
+    
+    import os
+    nworkers = os.cpu_count()
 
     train = torch.utils.data.DataLoader(
-        train, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True, worker_init_fn=_init_fn)
+        train, batch_size=batch_size, num_workers=nworkers, collate_fn=collate_fn, pin_memory=True, worker_init_fn=_init_fn)
 
     dev = torch.utils.data.DataLoader(
-        dev, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True, worker_init_fn=_init_fn)
+        dev, batch_size=batch_size, num_workers=nworkers, collate_fn=collate_fn, pin_memory=True, worker_init_fn=_init_fn)
 
     test = torch.utils.data.DataLoader(
-        test, batch_size=batch_size, num_workers=4, collate_fn=collate_fn, pin_memory=True, worker_init_fn=_init_fn)
+        test, batch_size=batch_size, num_workers=nworkers, collate_fn=collate_fn, pin_memory=True, worker_init_fn=_init_fn)
 
     model.to(device)
 
