@@ -147,3 +147,6 @@ class HateXPlain(BaseDataset):
 
     def get_vocab_size(self):
         return len(self.words2idx)
+
+    def get_labels(self):
+        return list(self.label_to_idx.keys())

@@ -90,3 +90,6 @@ class BaseDataset(torch.utils.data.Dataset):
 
     def get_vocab_size(self):
         raise NotImplementedError
+
+    def get_labels(self):
+        raise NotImplementedError

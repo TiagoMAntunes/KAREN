@@ -2,3 +2,5 @@ numpy == 1.19.5
 torch == 1.8.0
 tqdm == 4.59.0
 transformers
+sklearn
+tabulate

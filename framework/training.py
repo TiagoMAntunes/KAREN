@@ -4,6 +4,8 @@ from tqdm import tqdm
 import copy
 import numpy as np
 import random
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from tabulate import tabulate
 
 def train(model, dataset, loss_fn, optimizer, scheduler, max_iterations=30, seed=12345, split_amount=0.9, device="cpu", batch_size=256):
     
@@ -81,9 +83,9 @@ def train(model, dataset, loss_fn, optimizer, scheduler, max_iterations=30, seed
 
         # scheduler.step()
 
-        correct, tot = eval(model, dev, device)
-        accuracy = correct / tot
+        accuracy, scores = eval(model, dev, device)
         print(f'Epoch #{iteration + 1} validation accuracy = {accuracy:4f}')
+        # pretty_print_score(scores, dataset.get_labels())
 
         if accuracy > best_score:
             print(f'Accuracy increased from {best_score} to {accuracy}, saving model.')
@@ -91,15 +93,19 @@ def train(model, dataset, loss_fn, optimizer, scheduler, max_iterations=30, seed
             best_model = copy.deepcopy(model)
     
 
-    correct ,tot = eval(best_model, test, device)
-    print(f'\nTest accuracy: {correct / tot}')
+    accuracy, scores = eval(best_model, test, device)
+    print(f'\nTest accuracy: {accuracy}')
+    pretty_print_score(scores, dataset.get_labels())
         
+def pretty_print_score(scores, labels):
+    rows = list(zip(labels, *scores))
+    print(tabulate(rows, ['Label name', 'Precision', 'Recall', 'F1', 'Counts']))
 
-        
+
 def eval(model, test, device):
     model.eval()
-    tot = 0
-    correct = 0
+    guesses = []
+    correct = []
     for i, batch in enumerate(test):
         for key in batch:
             if not torch.is_tensor(batch[key]):
@@ -109,7 +115,9 @@ def eval(model, test, device):
         outputs = model(batch)
         results = outputs.argmax(dim=-1)
 
-        correct += (results == batch['label']).sum()
-        tot += outputs.shape[0]
+        guesses.extend(results.numpy())
+        correct.extend(batch['label'].numpy())
 
-    return correct, tot
+    accuracy = accuracy_score(correct, guesses)
+    scores = precision_recall_fscore_support(correct, guesses)
+    return accuracy, scores
