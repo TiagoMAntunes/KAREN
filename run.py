@@ -113,27 +113,28 @@ def start(args):
         args.vocab_size = d[1].get_vocab_size()
         args.device = "cpu" if args.cpu or not torch.cuda.is_available() else "cuda"
 
-        if vocab:
-            # pretrained embeddings, now needs to get the vocab list conversion
-            words2idx = d[1].words_to_idx()
-            # gets the correct order of the words that exist in the embeddings
-            indices = [vocab[x] if x in vocab else vocab['<unk>']
-                       for x in words2idx]
-            args.embeddings = values[indices]
+        for modelname in args.model:
+            print(f'\nStarting training of (Model={modelname} Dataset={d[0]})')
 
-        models = [(x, MODELS[x].make_model(args)) for x in args.model]
+            if vocab:
+                # pretrained embeddings, now needs to get the vocab list conversion
+                words2idx = d[1].words_to_idx()
+                # gets the correct order of the words that exist in the embeddings
+                indices = [vocab[x] if x in vocab else vocab['<unk>']
+                        for x in words2idx]
+                args.embeddings = nn.Embedding.from_pretrained(torch.tensor(values[indices]))
+            else:
+                # not pretrained ones, generate default embeddings
+                args.embeddings = nn.Embedding(args.vocab_size, args.embedding_dim)
 
-        for m in models:
-            print(f'\nStarting training of (Model={m[0]} Dataset={d[0]})')
-            # framework.training.train(m[1], d[1], nn.CrossEntropyLoss(), torch.optim.Adam(
-            #     m[1].parameters()), max_iterations=args.max_epochs, device=args.device, batch_size=args.batch_size)
+            model = MODELS[modelname].make_model(args)
 
             criterion = nn.CrossEntropyLoss()
-            optimizer = torch.optim.AdamW(m[1].parameters(), lr=args.lr)
+            optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
             scheduler = torch.optim.lr_scheduler.StepLR(
                 optimizer, step_size=7, gamma=0.1)
 
-            framework.training.train(m[1], d[1], criterion, optimizer, scheduler, max_iterations=args.max_epochs,
+            framework.training.train(model, d[1], criterion, optimizer, scheduler, max_iterations=args.max_epochs,
                                      device=args.device, batch_size=args.batch_size, seed=args.seed)
 
 

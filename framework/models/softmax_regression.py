@@ -21,7 +21,6 @@ class SoftmaxRegression(BaseModel):
     def forward(self, data):
         # to mask just multiply by zero the values
         res = (data['tokens'] * data['mask']).float()
-        
         out = self.activation(self.dropout(self.tohidden(res)))
         return self.dropout(self.toout(out))
 
@@ -34,7 +33,12 @@ class SoftmaxRegression(BaseModel):
 
     @staticmethod
     def make_model(args):
-        return SoftmaxRegression(args.in_feat, args.softmaxregression_hidden_size, args.out_feat, dropout=args.dropout)
+        return SoftmaxRegression(
+            args.in_feat,
+            args.softmaxregression_hidden_size,
+            args.out_feat,
+            dropout=args.dropout
+        )
 
     @staticmethod
     def data_requirements():

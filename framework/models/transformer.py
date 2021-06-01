@@ -5,6 +5,7 @@ import math
 from ..base_model import BaseModel
 from ..register_model import RegisterModel
 
+
 @RegisterModel('Transformer')
 class Transformer(BaseModel):
     """
@@ -46,14 +47,16 @@ class Transformer(BaseModel):
 
     @staticmethod
     def make_model(args):
-        if args.embeddings is not None:
-            embeddings = nn.Embedding.from_pretrained(
-                torch.tensor(args.embeddings))
-        else:
-            embeddings = nn.Embedding(args.vocab_size, args.embedding_dim)
-
-        return Transformer(args.in_feat, args.out_feat, args.transformer_hidden_size,
-                        args.transformer_n_heads, args.transformer_n_layers, embeddings, args.dropout, args.batch_size)
+        return Transformer(
+            args.in_feat,
+            args.out_feat,
+            args.transformer_hidden_size,
+            args.transformer_n_heads,
+            args.transformer_n_layers,
+            args.embeddings,
+            args.dropout,
+            args.batch_size
+        )
 
     @staticmethod
     def data_requirements():
