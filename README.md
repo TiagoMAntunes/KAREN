@@ -27,6 +27,7 @@ You can check the parameters of each model in its file or by checking the initia
 ## Contributing
 
 You can contribute to the framework by adding models and datasets that fit the format of the framework.
+Please note that for simplification, we assumed this task as being a multi-class classification, so the model must output probabilities of `out_feat` size which will then be passed to a `softmax` function. 
 
 ### Models
 
@@ -56,3 +57,26 @@ The `make_model` function should refrain from using any others than this list an
 Datasets are implemented similar to models. You must extend `BaseDataset` from the file `framework/datasets/base_dataset.py` and implemented the required logic. `framework/datasets/hatexplain.py` provides an example on how to implement a dataset with lazy preprocessing. 
 
 For registering datasets, you must use the `@RegisterDataset` decorator and add the import in the `framework/datasets/__init__.py`. All the remaining logic is the same as for the models.
+
+
+## Initial Results
+HateXPlain evaluation. Precision, Recall and F1-score are the results from the hatespeech class.
+
+| Model	| Accuracy	| Precision	| Recall | F1| 
+| ------| ----------| ----------| -------| --| 
+| **Bert**| **0.689**| 	**0.777**	| **0.752**| 	**0.764**|
+| CNN	| 0.613	| 0.711	| 0.69	| 0.7| 
+| Softmax Regression	| 0.366	| 0.298	| 0.087	| 0.135| 
+| RNN	| 0.55	| 0.684| 	0.654| 	0.669| 
+| BiLSTM| 	0.59| 	0.662| 	0.764| 	0.71| 
+| NetLSTM	| 0.61| 	0.678| 	0.76| 	0.716| 
+| GRU	| 0.609	| 0.666	| 0.777	| 0.72| 
+| Transformer (1 layer)	| 0.486| 	0.495	| 0.6	| 0.543| 
+| Transformer (2 layers)| 	0.532| 	0.551	| 0.732| 	0.629| 
+| RNN + GloVe	| 0.546| 	0.59	| 0.779	| 0.672| 
+| **CNN + GloVe**	| **0.644**	| **0.69** | **0.767**| **0.726**| 
+| **BiLSTM + GloVe**	| **0.637**| 	**0.677**	| **0.781**| 	**0.73**| 
+| **GRU + GloVe**| **0.64**| 	**0.699**	| **0.736** | **0.717** | 
+| NetLSTM + GloVe	| 0.616| 	0.679| 	0.756| 	0.715| 
+| Transformer (1 layer) + GloVe	| 0.564	| 0.581	| 0.785	| 0.668| 
+| Transformer (2 layers) + GloVe| 	0.572| 	0.751| 	0.609	| 0.672| 
