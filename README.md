@@ -1,4 +1,4 @@
-# Hate Speech Framework
+# KAREN: Unifying Hatespeech Detection and Benchmarking
 
 This project started as a course project for the 2021 Natural Language Processing course at Tsinghua University and is still a work in progress. Contributions are accepted for further work.
 
