@@ -115,8 +115,8 @@ def eval(model, test, device):
         outputs = model(batch)
         results = outputs.argmax(dim=-1)
 
-        guesses.extend(results.numpy())
-        correct.extend(batch['label'].numpy())
+        guesses.extend(results.cpu().numpy())
+        correct.extend(batch['label'].cpu().numpy())
 
     accuracy = accuracy_score(correct, guesses)
     scores = precision_recall_fscore_support(correct, guesses)
