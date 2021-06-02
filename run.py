@@ -102,23 +102,23 @@ def get_embeddings(args):
 
 def start(args):
     # Create all the required data to perform the computation
-    datasets = [(x, DATASETS[x].make_dataset(args)) for x in args.dataset]
     vocab, values = get_embeddings(args)
     if vocab:
         vocab = {j: i for i, j in enumerate(vocab)}
 
-    for d in datasets:
-        args.in_feat = d[1].get_input_feat_size()
-        args.out_feat = d[1].get_output_feat_size()
-        args.vocab_size = d[1].get_vocab_size()
+    for datasetname in args.dataset:
+        d = DATASETS[datasetname].make_dataset(args)
+        args.in_feat = d.get_input_feat_size()
+        args.out_feat = d.get_output_feat_size()
+        args.vocab_size = d.get_vocab_size()
         args.device = "cpu" if args.cpu or not torch.cuda.is_available() else "cuda"
 
         for modelname in args.model:
-            print(f'\nStarting training of (Model={modelname} Dataset={d[0]})')
+            print(f'\nStarting training of (Model={modelname} Dataset={datasetname})')
 
             if vocab:
                 # pretrained embeddings, now needs to get the vocab list conversion
-                words2idx = d[1].words_to_idx()
+                words2idx = d.words_to_idx()
                 # gets the correct order of the words that exist in the embeddings
                 indices = [vocab[x] if x in vocab else vocab['<unk>']
                         for x in words2idx]
@@ -134,7 +134,7 @@ def start(args):
             scheduler = torch.optim.lr_scheduler.StepLR(
                 optimizer, step_size=7, gamma=0.1)
 
-            framework.training.train(model, d[1], criterion, optimizer, scheduler, max_iterations=args.max_epochs,
+            framework.training.train(model, d, criterion, optimizer, scheduler, max_iterations=args.max_epochs,
                                      device=args.device, batch_size=args.batch_size, seed=args.seed)
 
 
