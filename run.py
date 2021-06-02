@@ -1,7 +1,7 @@
-import framework.training
-from framework.register_model import MODELS
-from framework.register_dataset import DATASETS
-from framework.register_embeddings import EMBEDDINGS
+import karen.training
+from karen.register_model import MODELS
+from karen.register_dataset import DATASETS
+from karen.register_embeddings import EMBEDDINGS
 
 import torch
 import torch.nn as nn
@@ -134,7 +134,7 @@ def start(args):
             scheduler = torch.optim.lr_scheduler.StepLR(
                 optimizer, step_size=7, gamma=0.1)
 
-            framework.training.train(model, d, criterion, optimizer, scheduler, max_iterations=args.max_epochs,
+            karen.training.train(model, d, criterion, optimizer, scheduler, max_iterations=args.max_epochs,
                                      device=args.device, batch_size=args.batch_size, seed=args.seed)
 
 
