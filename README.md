@@ -73,6 +73,8 @@ HateXPlain evaluation. Precision, Recall and F1-score are the results from the h
 | GRU	| 0.609	| 0.666	| 0.777	| 0.72| 
 | Transformer (1 layer)	| 0.486| 	0.495	| 0.6	| 0.543| 
 | Transformer (2 layers)| 	0.532| 	0.551	| 0.732| 	0.629| 
+| CharCNN | 0.552 | 0.65 | 0.61 | 0.63 |
+| DistilBERT | 0.646 | 0.481 | 0.504 |
 | RNN + GloVe	| 0.546| 	0.59	| 0.779	| 0.672| 
 | **CNN + GloVe**	| **0.644**	| **0.69** | **0.767**| **0.726**| 
 | **BiLSTM + GloVe**	| **0.637**| 	**0.677**	| **0.781**| 	**0.73**| 
@@ -80,3 +82,4 @@ HateXPlain evaluation. Precision, Recall and F1-score are the results from the h
 | NetLSTM + GloVe	| 0.616| 	0.679| 	0.756| 	0.715| 
 | Transformer (1 layer) + GloVe	| 0.564	| 0.581	| 0.785	| 0.668| 
 | Transformer (2 layers) + GloVe| 	0.572| 	0.751| 	0.609	| 0.672| 
+| CharCNN + Glove | 0.573 | 0.631 | 0.753 | 0.686 | 
