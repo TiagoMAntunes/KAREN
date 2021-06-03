@@ -12,10 +12,10 @@ class BERT(BaseModel):
     """
 
     def __init__(
-        self, 
-        num_labels, 
-        cased, 
-        device
+        self,
+        num_labels,
+        cased,
+        device,
     ):
         super(BERT, self).__init__()
         self.cased = "bert-base-cased" if cased else "bert-base-uncased"

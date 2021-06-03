@@ -1,7 +1,6 @@
-
-class BaseEmbedding():
+class BaseEmbedding:
     """
-        Interface to be implemented by all embedding classes
+    Interface to be implemented by all embedding classes
     """
 
     @classmethod

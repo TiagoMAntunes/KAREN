@@ -46,8 +46,7 @@ class BiLSTM(BaseModel):
 
     def forward(self, data):
         shape = data["tokens"].shape
-        embedded = self.embedding(data["tokens"]).reshape(
-            shape[0], shape[1], -1)
+        embedded = self.embedding(data["tokens"]).reshape(shape[0], shape[1], -1)
         self.lstm.flatten_parameters()
         out, _ = self.lstm(embedded)
         out = out[:, 0, :]
@@ -58,16 +57,11 @@ class BiLSTM(BaseModel):
     def add_required_arguments(parser):
         group = parser.add_argument_group()
 
-        group.add_argument("--bilstm-hidden-size", type=int,
-                           default=64, help="BiLSTM hidden size")
-        group.add_argument("--bilstm-linear-size", type=int,
-                           default=8, help="Linear hidden size")
-        group.add_argument("--bilstm-n-layers", type=int,
-                           default=2, help="Number of layers in the BiLSTM")
-        group.add_argument("--bilstm-dropout-hidden", type=float,
-                           default=0.5, help="Dropout between the BiLSTM layers")
-        group.add_argument("--bilstm-bidirectional", type=bool,
-                           default=True, help="Train BiLSTM or LSTM")
+        group.add_argument("--bilstm-hidden-size", type=int, default=64, help="BiLSTM hidden size")
+        group.add_argument("--bilstm-linear-size", type=int, default=8, help="Linear hidden size")
+        group.add_argument("--bilstm-n-layers", type=int, default=2, help="Number of layers in the BiLSTM")
+        group.add_argument("--bilstm-dropout-hidden", type=float, default=0.5, help="Dropout between the BiLSTM layers")
+        group.add_argument("--bilstm-bidirectional", type=bool, default=True, help="Train BiLSTM or LSTM")
 
     @staticmethod
     def make_model(args):

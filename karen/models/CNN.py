@@ -8,12 +8,12 @@ from ..register_model import RegisterModel
 @RegisterModel("CNN")
 class CNN(BaseModel):
     def __init__(
-        self, 
-        out_feat, 
-        embeddings, 
-        dropout, 
-        filter_range=4, 
-        out_channels=100
+        self,
+        out_feat,
+        embeddings,
+        dropout,
+        filter_range=4,
+        out_channels=100,
     ):
         super(CNN, self).__init__()
 
@@ -22,8 +22,7 @@ class CNN(BaseModel):
 
         self.convs = nn.ModuleList(
             [
-                nn.Conv2d(in_channels=1, out_channels=out_channels,
-                          kernel_size=(fs, self.embedding.weight.shape[-1]))
+                nn.Conv2d(in_channels=1, out_channels=out_channels, kernel_size=(fs, self.embedding.weight.shape[-1]))
                 for fs in filter_sizes
             ]
         )
@@ -47,20 +46,12 @@ class CNN(BaseModel):
     def add_required_arguments(parser):
         group = parser.add_argument_group()
 
-        group.add_argument("--cnn-filter-range", type=int, default=4,
-                           help="Kernel sizes range from 1 to this value")
-        group.add_argument("--cnn-out-channels", type=int,
-                           default=100, help="Out channels for each convolution")
+        group.add_argument("--cnn-filter-range", type=int, default=4, help="Kernel sizes range from 1 to this value")
+        group.add_argument("--cnn-out-channels", type=int, default=100, help="Out channels for each convolution")
 
     @staticmethod
     def make_model(args):
-        return CNN(
-            args.out_feat,
-            args.embeddings,
-            args.dropout,
-            args.cnn_filter_range,
-            args.cnn_out_channels
-        )
+        return CNN(args.out_feat, args.embeddings, args.dropout, args.cnn_filter_range, args.cnn_out_channels)
 
     @staticmethod
     def data_requirements():

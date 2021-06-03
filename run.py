@@ -14,36 +14,37 @@ from pprint import pprint
 def add_model_params(parser):
     group = parser.add_argument_group()
 
-    group.add_argument('--model', '-m', type=str,
-                       help='Name of the model to run', nargs='+', required=True)
-    group.add_argument('--lr', type=float,
-                       help='The learning rate to be applied on the optimizer', default=1e-3)
-    group.add_argument('--dropout', type=float,
-                       help='The dropout to apply on the model', default=0.1)
-    group.add_argument('--embeddings', type=str,
-                       help='In case of using pretrained embeddings, the type to use', default=None)
-    group.add_argument('--embedding-dim', type=int,
-                       help='The size of the embeddings to use', default=200)
+    group.add_argument("--model", "-m", type=str, help="Name of the model to run", nargs="+", required=True)
+    group.add_argument("--lr", type=float, help="The learning rate to be applied on the optimizer", default=1e-3)
+    group.add_argument("--dropout", type=float, help="The dropout to apply on the model", default=0.1)
+    group.add_argument(
+        "--embeddings", type=str, help="In case of using pretrained embeddings, the type to use", default=None
+    )
+    group.add_argument("--embedding-dim", type=int, help="The size of the embeddings to use", default=200)
 
 
 def add_dataset_params(parser):
     group = parser.add_argument_group()
 
-    group.add_argument('--dataset', '-d', type=str,
-                       help='Name of the dataset in which to train and evaluate the model', nargs='+', required=True)
+    group.add_argument(
+        "--dataset",
+        "-d",
+        type=str,
+        help="Name of the dataset in which to train and evaluate the model",
+        nargs="+",
+        required=True,
+    )
 
 
 def add_iteration_params(parser):
     group = parser.add_argument_group()
 
-    group.add_argument('--cpu', action='store_true',
-                       help='Whether to use CPU instead of CUDA to run the model')
-    group.add_argument('--max-epochs', '--epochs', default=50, type=int,
-                       help='The number of iterations to run the optimization')
-    group.add_argument('--batch-size', default=256, type=int,
-                       help='Batch size used in the dataloaders')
-    group.add_argument('--seed', default=12345, type=int,
-                       help='Seed for reproducibility')
+    group.add_argument("--cpu", action="store_true", help="Whether to use CPU instead of CUDA to run the model")
+    group.add_argument(
+        "--max-epochs", "--epochs", default=50, type=int, help="The number of iterations to run the optimization"
+    )
+    group.add_argument("--batch-size", default=256, type=int, help="Batch size used in the dataloaders")
+    group.add_argument("--seed", default=12345, type=int, help="Seed for reproducibility")
 
 
 def get_specific_model_params(parser, args):
@@ -54,9 +55,10 @@ def get_specific_model_params(parser, args):
 
     if invalid:
         print()
-        print('Invalid model selection: {}. Available models:\n- {}'.format(invalid,
-              "\n- ".join(sorted(MODELS.keys()))))
-        raise ValueError('Invalid model selection')
+        print(
+            "Invalid model selection: {}. Available models:\n- {}".format(invalid, "\n- ".join(sorted(MODELS.keys())))
+        )
+        raise ValueError("Invalid model selection")
 
     for m in args.model:
         MODELS[m].add_required_arguments(group)
@@ -70,19 +72,19 @@ def get_specific_dataset_params(parser, args):
 
     if invalid:
         print()
-        print('Invalid dataset selection: {}. Available datasets:\n- {}'.format(invalid,
-              "\n- ".join(sorted(DATASETS.keys()))))
-        raise ValueError('Invalid dataset selection')
+        print(
+            "Invalid dataset selection: {}. Available datasets:\n- {}".format(
+                invalid, "\n- ".join(sorted(DATASETS.keys()))
+            )
+        )
+        raise ValueError("Invalid dataset selection")
 
     # also check if the models can be run on the datasets
     for model, dataset in ((x, y) for x in args.model for y in args.dataset):
         r = set(MODELS[model].data_requirements())
-        a = set(
-            (lambda x, y: x+y)(*DATASETS[dataset].get_properties())
-        )
+        a = set((lambda x, y: x + y)(*DATASETS[dataset].get_properties()))
         if not r.issubset(a):
-            raise ValueError(
-                f'Dataset {dataset} does not contain all model {model} requirements: {r.difference(a)} ')
+            raise ValueError(f"Dataset {dataset} does not contain all model {model} requirements: {r.difference(a)} ")
 
     for d in args.dataset:
         DATASETS[d].add_required_arguments(group)
@@ -95,7 +97,7 @@ def get_embeddings(args):
     name = args.embeddings.lower()
 
     if name not in EMBEDDINGS:
-        raise ValueError(f'Framework does not support {args.embeddings}.')
+        raise ValueError(f"Framework does not support {args.embeddings}.")
 
     return EMBEDDINGS[name].get(dim=args.embedding_dim)
 
@@ -114,14 +116,13 @@ def start(args):
         args.device = "cpu" if args.cpu or not torch.cuda.is_available() else "cuda"
 
         for modelname in args.model:
-            print(f'\nStarting training of (Model={modelname} Dataset={datasetname})')
+            print(f"\nStarting training of (Model={modelname} Dataset={datasetname})")
 
             if vocab:
                 # pretrained embeddings, now needs to get the vocab list conversion
                 words2idx = d.words_to_idx()
                 # gets the correct order of the words that exist in the embeddings
-                indices = [vocab[x] if x in vocab else vocab['<unk>']
-                        for x in words2idx]
+                indices = [vocab[x] if x in vocab else vocab["<unk>"] for x in words2idx]
                 args.embeddings = nn.Embedding.from_pretrained(torch.tensor(values[indices]))
             else:
                 # not pretrained ones, generate default embeddings
@@ -131,11 +132,19 @@ def start(args):
 
             criterion = nn.CrossEntropyLoss()
             optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
-            scheduler = torch.optim.lr_scheduler.StepLR(
-                optimizer, step_size=7, gamma=0.1)
+            scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-            karen.training.train(model, d, criterion, optimizer, scheduler, max_iterations=args.max_epochs,
-                                     device=args.device, batch_size=args.batch_size, seed=args.seed)
+            karen.training.train(
+                model,
+                d,
+                criterion,
+                optimizer,
+                scheduler,
+                max_iterations=args.max_epochs,
+                device=args.device,
+                batch_size=args.batch_size,
+                seed=args.seed,
+            )
 
 
 def reproducible(seed):
@@ -148,10 +157,11 @@ def reproducible(seed):
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
     import os
-    os.environ['PYTHONHASHSEED'] = str(seed)
+
+    os.environ["PYTHONHASHSEED"] = str(seed)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     reproducible(12345)
 
     # get arguments
@@ -181,9 +191,8 @@ if __name__ == '__main__':
     args.model = list(set(args.model))
     args.dataset = list(set(args.dataset))
 
-    print('*'*30, ' CONFIGURATION ', '*'*30)
-    print('\n'.join([f'{k:40}{v}' for k, v in sorted(
-        list(vars(args).items()), key=lambda x: x[0])]))
-    print('*'*77, '\n')
+    print("*" * 30, " CONFIGURATION ", "*" * 30)
+    print("\n".join([f"{k:40}{v}" for k, v in sorted(list(vars(args).items()), key=lambda x: x[0])]))
+    print("*" * 77, "\n")
 
     t = start(args)

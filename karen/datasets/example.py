@@ -7,12 +7,11 @@ from ..register_dataset import RegisterDataset
 @RegisterDataset()
 class DatasetName(BaseDataset):
     """
-        This is a template file of a dataset implementation
+    This is a template file of a dataset implementation
     """
 
-    def __init__(self, url='', name=''):
+    def __init__(self, url="", name=""):
         super().__init__(url, name)
-        
 
     def __getitem__(self, idx):
         pass
