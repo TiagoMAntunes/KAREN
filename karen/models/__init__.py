@@ -7,3 +7,4 @@ from .GRU import GRU
 from .RNN import RNN
 from .BERT import BERT
 from .NetLSTM import NetLSTM
+from .CharCNN import CharCNN
