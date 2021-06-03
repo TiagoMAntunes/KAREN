@@ -10,7 +10,13 @@ class SoftmaxRegression(BaseModel):
         A simple model that applies a Feed Forward Network with a softmax at the end
     """
 
-    def __init__(self, in_feat, hidden_size, out_feat, dropout=0.1):
+    def __init__(
+        self, 
+        in_feat, 
+        hidden_size, 
+        out_feat, 
+        dropout=0.1
+    ):
         super(SoftmaxRegression, self).__init__()
         self.tohidden = nn.Linear(in_feat, hidden_size)
         self.toout = nn.Linear(hidden_size, out_feat)

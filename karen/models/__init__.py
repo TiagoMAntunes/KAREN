@@ -6,4 +6,6 @@ from .CNN import CNN
 from .GRU import GRU
 from .RNN import RNN
 from .BERT import BERT
+from .DistilBERT import DistilBERT
 from .NetLSTM import NetLSTM
+from .CharCNN import CharCNN
