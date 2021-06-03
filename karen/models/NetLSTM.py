@@ -11,7 +11,15 @@ class NetLSTM(BaseModel):
     This is a template file of a model implementation
     """
 
-    def __init__(self, out_feat, hidden_size, embeddings, n_layers, dropout, dropout_lstm):
+    def __init__(
+        self, 
+        out_feat, 
+        hidden_size, 
+        embeddings, 
+        n_layers, 
+        dropout, 
+        dropout_lstm
+    ):
         super(NetLSTM, self).__init__()
         self.word_embeddings = embeddings
         input_size = self.word_embeddings.weight.shape[-1]

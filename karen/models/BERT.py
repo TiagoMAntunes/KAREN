@@ -11,7 +11,12 @@ class BERT(BaseModel):
     BERT sentiment classification
     """
 
-    def __init__(self, num_labels, cased, device):
+    def __init__(
+        self, 
+        num_labels, 
+        cased, 
+        device
+    ):
         super(BERT, self).__init__()
         self.cased = "bert-base-cased" if cased else "bert-base-uncased"
         self.tokenizer = BertTokenizer.from_pretrained(self.cased)

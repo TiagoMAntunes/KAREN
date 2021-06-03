@@ -11,7 +11,12 @@ class DistilBERT(BaseModel):
     BERT sentiment classification
     """
 
-    def __init__(self, num_labels, cased, device):
+    def __init__(
+        self, 
+        num_labels, 
+        cased, 
+        device
+    ):
         super(DistilBERT, self).__init__()
         self.cased = "distilbert-base-cased" if cased else "distilbert-base-uncased"
         self.tokenizer = DistilBertTokenizer.from_pretrained(self.cased)

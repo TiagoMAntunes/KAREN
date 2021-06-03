@@ -7,7 +7,14 @@ from ..register_model import RegisterModel
 
 @RegisterModel("CNN")
 class CNN(BaseModel):
-    def __init__(self, out_feat, embeddings, dropout, filter_range=4, out_channels=100):
+    def __init__(
+        self, 
+        out_feat, 
+        embeddings, 
+        dropout, 
+        filter_range=4, 
+        out_channels=100
+    ):
         super(CNN, self).__init__()
 
         self.embedding = embeddings

@@ -16,7 +16,17 @@ class Transformer(BaseModel):
         Allows for usage of pre-trained word embeddings
     """
 
-    def __init__(self, in_feat, out_feat, hidden_size, n_heads, n_layers, embeddings, dropout, batch_size):
+    def __init__(
+        self, 
+        in_feat, 
+        out_feat, 
+        hidden_size, 
+        n_heads, 
+        n_layers, 
+        embeddings, 
+        dropout, 
+        batch_size
+    ):
         super(Transformer, self).__init__()
         self.embeddings = embeddings
         size = self.embeddings.weight.shape[-1]
