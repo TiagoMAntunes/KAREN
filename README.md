@@ -74,7 +74,7 @@ HateXPlain evaluation. Precision, Recall and F1-score are the results from the h
 | Transformer (1 layer)	| 0.486| 	0.495	| 0.6	| 0.543| 
 | Transformer (2 layers)| 	0.532| 	0.551	| 0.732| 	0.629| 
 | CharCNN | 0.552 | 0.65 | 0.61 | 0.63 |
-| DistilBERT | 0.646 | 0.481 | 0.504 |
+| **DistilBERT** | **0.646** | **0.766** | **0.704** | **0.734** |
 | RNN + GloVe	| 0.546| 	0.59	| 0.779	| 0.672| 
 | **CNN + GloVe**	| **0.644**	| **0.69** | **0.767**| **0.726**| 
 | **BiLSTM + GloVe**	| **0.637**| 	**0.677**	| **0.781**| 	**0.73**| 
