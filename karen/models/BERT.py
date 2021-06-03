@@ -34,7 +34,7 @@ class BERT(BaseModel):
     def add_required_arguments(parser):
         group = parser.add_argument_group()
 
-        group.add_argument("--bert_cased", type=bool, default=False, help="whether to use cased BERT")
+        group.add_argument("--bert-cased", type=bool, default=False, help="whether to use cased BERT")
 
     @staticmethod
     def make_model(args):

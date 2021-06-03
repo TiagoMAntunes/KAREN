@@ -12,10 +12,10 @@ class DistilBERT(BaseModel):
     """
 
     def __init__(
-        self, 
-        num_labels, 
-        cased, 
-        device
+        self,
+        num_labels,
+        cased,
+        device,
     ):
         super(DistilBERT, self).__init__()
         self.cased = "distilbert-base-cased" if cased else "distilbert-base-uncased"
