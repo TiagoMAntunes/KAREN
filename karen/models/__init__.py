@@ -9,3 +9,4 @@ from .BERT import BERT
 from .DistilBERT import DistilBERT
 from .NetLSTM import NetLSTM
 from .CharCNN import CharCNN
+from .UNet import UNet
