@@ -6,6 +6,7 @@ import numpy as np
 import random
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 from tabulate import tabulate
+import os
 
 
 def train(
@@ -36,7 +37,7 @@ def train(
         data = {
             **{name: torch.tensor(x) for name, x in zip(tensors, tensors_data) if name in requirements},
             **{name: x for name, x in zip(nontensors, nontensors_data) if name in requirements},
-            **{name: x for name,x in dataset.get_extra_properties().items() if name in requirements},
+            **{name: x for name, x in dataset.get_extra_properties().items() if name in requirements},
         }
 
         return data
@@ -50,8 +51,6 @@ def train(
     splitter = lambda x: [round(split_amount * len(x)), len(x) - round(split_amount * len(x))]
     train, dev = torch.utils.data.random_split(dataset, splitter(dataset))
     train, test = torch.utils.data.random_split(train, splitter(train))
-
-    import os
 
     nworkers = os.cpu_count()
 

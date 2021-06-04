@@ -87,7 +87,7 @@ class HateXPlain(BaseDataset):
         # transform labels into numbers for classification
         label_to_idx = {label: i for i, label in enumerate(labels)}
 
-        word_to_idx = {word: i for i, word in enumerate(vocab)}
+        word_to_idx = {word: i for i, word in enumerate(sorted(list(vocab)))}
         self.words2idx = word_to_idx
         # padding of tokens and transformation
         max_size = max(map(lambda x: len(x), tokens))

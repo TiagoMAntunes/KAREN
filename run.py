@@ -108,6 +108,7 @@ def start(args):
     if vocab:
         vocab = {j: i for i, j in enumerate(vocab)}
 
+    i = 0
     for datasetname in args.dataset:
         d = DATASETS[datasetname].make_dataset(args)
         args.in_feat = d.get_input_feat_size()
@@ -128,12 +129,15 @@ def start(args):
                 # not pretrained ones, generate default embeddings
                 args.embeddings = nn.Embedding(args.vocab_size, args.embedding_dim)
 
+            reproducible(i)
+            i+=1
             model = MODELS[modelname].make_model(args)
 
             criterion = nn.CrossEntropyLoss()
             optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
             scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
+            reproducible(args.seed)
             karen.training.train(
                 model,
                 d,
@@ -162,8 +166,6 @@ def reproducible(seed):
 
 
 if __name__ == "__main__":
-    reproducible(12345)
-
     # get arguments
     parser = argparse.ArgumentParser()
 
