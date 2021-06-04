@@ -39,6 +39,7 @@ class BaseDataset(torch.utils.data.Dataset):
         The location is not supposed to be changed as it will include the name that was assigned to the dataset
         """
         import wget
+
         print(f"Downloading file from {url}")
         wget.download(url, out=location)
         print()
@@ -57,7 +58,7 @@ class BaseDataset(torch.utils.data.Dataset):
         """
         Because datasets have different properties, it makes sense for class each one of them to state what properties it contains. The keywords should be shared across datasets for class a unified format
 
-        Should return two sets with the available content in the dataset. Set 1 must contains properties that can be converted into tensor, set 2 must contain types not supported (ex: lists, strings)
+        Should return three list with the available content in the dataset. List 1 must contains properties that can be converted into tensor, List 2 must contain types not supported (ex: lists, strings), List 3 must contain always present properties that do not depend on the batch (e.g. TF-IDF)
         """
         raise NotImplementedError(f"No get_properties method implemented for class {cls.__name__}")
 
@@ -86,4 +87,13 @@ class BaseDataset(torch.utils.data.Dataset):
         raise NotImplementedError
 
     def get_labels(self):
+        raise NotImplementedError
+
+    def get_extra_properties(self):
+        """
+        The third list of @get_properties defines always present data.
+        This function will be the one that returns such data.
+        The return value must be a dictionary with the keys pointing to a data structure uniform across the whole available data
+        """
+
         raise NotImplementedError

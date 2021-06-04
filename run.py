@@ -82,7 +82,7 @@ def get_specific_dataset_params(parser, args):
     # also check if the models can be run on the datasets
     for model, dataset in ((x, y) for x in args.model for y in args.dataset):
         r = set(MODELS[model].data_requirements())
-        a = set((lambda x, y: x + y)(*DATASETS[dataset].get_properties()))
+        a = set([y for x in DATASETS[dataset].get_properties() for y in x])
         if not r.issubset(a):
             raise ValueError(f"Dataset {dataset} does not contain all model {model} requirements: {r.difference(a)} ")
 

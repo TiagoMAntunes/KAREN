@@ -1,7 +1,7 @@
 import torch
 from ..base_dataset import BaseDataset
 import numpy as np
-from collections import Counter
+from collections import Counter, defaultdict
 
 
 from ..register_dataset import RegisterDataset
@@ -88,13 +88,13 @@ class HateXPlain(BaseDataset):
         label_to_idx = {label: i for i, label in enumerate(labels)}
 
         word_to_idx = {word: i for i, word in enumerate(vocab)}
-
+        self.words2idx = word_to_idx
         # padding of tokens and transformation
         max_size = max(map(lambda x: len(x), tokens))
         padding_mask = [[True] * len(x) + [False] * (max_size - len(x)) for x in tokens]
 
         text = [" ".join(x) for x in tokens]
-        tokens = [list(map(lambda y: word_to_idx[y], x)) + [0] * (max_size - len(x)) for x in tokens]
+        newtokens = [list(map(lambda y: word_to_idx[y], x)) + [0] * (max_size - len(x)) for x in tokens]
 
         # transform ids into ints
         ids_to_idx = {idx: i for i, idx in enumerate(ids)}
@@ -103,13 +103,34 @@ class HateXPlain(BaseDataset):
         # This is done like this to avoid warnings from numpy
         self.data = {
             "id": np.array(ids, dtype=int),
-            "tokens": np.array(tokens, dtype=int),
+            "tokens": np.array(newtokens, dtype=int),
             "mask": np.array(padding_mask, dtype=bool),
             "label": np.array([label_to_idx[x] for x in label], dtype=int),
             "annotator_labels": np.array([[label_to_idx[y] for y in x] for x in annotator_labels], dtype=int),
             "annotator_targets": np.array(annotator_targets, dtype=object),
             "rationales": np.array(rationales, dtype=object),
             "text": text,
+        }
+
+        #tf 
+        counts = Counter([y for x in tokens for y in x])
+        totsize = sum(counts.values())
+        tf = list(map(lambda x: (x[0], x[1] / totsize), counts.items()))
+        
+        #idf
+        ndocs = len(tokens)
+        doccounts = defaultdict(int)
+        for sentence in tokens:
+            words = set(sentence)
+            for w in words:
+                doccounts[w] += 1
+        for k in doccounts:
+            doccounts[k] = doccounts[k] / ndocs
+        
+        tfidf = sorted([(word_to_idx[x[0]], x[1] * doccounts[x[0]]) for x in tf], key=lambda x: x[0])
+
+        self.extras = {
+            "tf-idf": np.array(tfidf)[:, 1]
         }
 
         self.ids_to_idx = ids_to_idx
@@ -120,7 +141,11 @@ class HateXPlain(BaseDataset):
 
     @classmethod
     def get_properties(cls):
-        return ["id", "tokens", "mask", "label", "annotator_labels"], ["annotator_targets", "rationales", "text"]
+        return (
+            ["id", "tokens", "mask", "label", "annotator_labels"],
+            ["annotator_targets", "rationales", "text"],
+            ["tf-idf"],
+        )
 
     def get_input_feat_size(self):
         if not self.preprocessed:
@@ -157,3 +182,6 @@ class HateXPlain(BaseDataset):
 
     def get_labels(self):
         return list(self.label_to_idx.keys())
+
+    def get_extra_properties(self):
+        return self.extras

@@ -24,7 +24,7 @@ def train(
     requirements = set(model.data_requirements() + ["label"])
 
     def collate_fn(data):
-        tensors, nontensors = dataset.__class__.get_properties()
+        tensors, nontensors, _ = dataset.__class__.get_properties()
 
         tensors_data = [x[: len(tensors)] for x in data]
         tensors_data = [[x[i] for x in tensors_data] for i in range(len(tensors_data[0]))]
@@ -36,6 +36,7 @@ def train(
         data = {
             **{name: torch.tensor(x) for name, x in zip(tensors, tensors_data) if name in requirements},
             **{name: x for name, x in zip(nontensors, nontensors_data) if name in requirements},
+            **{name: x for name,x in dataset.get_extra_properties().items() if name in requirements},
         }
 
         return data
