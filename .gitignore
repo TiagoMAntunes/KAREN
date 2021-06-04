@@ -1,3 +1,5 @@
 __pycache__
 available_datasets/
 embeddings_data/
+.vscode
+*.zip

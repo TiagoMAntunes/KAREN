@@ -38,13 +38,10 @@ class BaseDataset(torch.utils.data.Dataset):
         This class is given the url and location which are also specified in the creation of the subclass
         The location is not supposed to be changed as it will include the name that was assigned to the dataset
         """
-        import urllib.request
-        import shutil
-
-        with urllib.request.urlopen(url) as response, open(location, "wb") as f:
-            if debug:
-                print(f"Downloading file from {url}")
-            shutil.copyfileobj(response, f)
+        import wget
+        print(f"Downloading file from {url}")
+        wget.download(url, out=location)
+        print()
 
     def __getitem__(self, idx):
         """

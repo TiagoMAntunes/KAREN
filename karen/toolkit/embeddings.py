@@ -15,19 +15,22 @@ if not os.path.exists(SAVEFOLDER):
 def download(url, savelocation):
     """Downloads the file from that URL if it exists. Returns True if downloaded"""
     import urllib
-    import shutil
+    import wget
 
     if os.path.exists(savelocation):
         return False
 
     os.mkdir(savelocation)
 
-    with urllib.request.urlopen(url) as response, open(savelocation + "download.zip", "wb") as f:
-        print(
-            f"Downloading file from {url}. This might take a while so you can monitor the download size in {savelocation + 'download.zip'}"
-        )
-        shutil.copyfileobj(response, f)
-        print("Download finished!")
+    # with urllib.request.urlopen(url) as response, open(savelocation + "download.zip", "wb") as f:
+    #     print(
+    #         f"Downloading file from {url}. This might take a while so you can monitor the download size in {savelocation + 'download.zip'}"
+    #     )
+    #     wget.copyfileobj(response, f)
+    #     print("Download finished!")
+    print(f"Downloading file from {url}")
+    wget.download(url, out=savelocation + "download.zip")
+    print()
     return True
 
 

@@ -4,3 +4,4 @@ tqdm
 transformers
 sklearn
 tabulate
+wget
