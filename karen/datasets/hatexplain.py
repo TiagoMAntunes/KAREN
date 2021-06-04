@@ -112,26 +112,7 @@ class HateXPlain(BaseDataset):
             "text": text,
         }
 
-        #tf 
-        counts = Counter([y for x in tokens for y in x])
-        totsize = sum(counts.values())
-        tf = list(map(lambda x: (x[0], x[1] / totsize), counts.items()))
-        
-        #idf
-        ndocs = len(tokens)
-        doccounts = defaultdict(int)
-        for sentence in tokens:
-            words = set(sentence)
-            for w in words:
-                doccounts[w] += 1
-        for k in doccounts:
-            doccounts[k] = doccounts[k] / ndocs
-        
-        tfidf = sorted([(word_to_idx[x[0]], x[1] * doccounts[x[0]]) for x in tf], key=lambda x: x[0])
-
-        self.extras = {
-            "tf-idf": np.array(tfidf)[:, 1]
-        }
+        self.extras = {}
 
         self.ids_to_idx = ids_to_idx
         self.label_to_idx = label_to_idx
@@ -144,7 +125,7 @@ class HateXPlain(BaseDataset):
         return (
             ["id", "tokens", "mask", "label", "annotator_labels"],
             ["annotator_targets", "rationales", "text"],
-            ["tf-idf"],
+            [],
         )
 
     def get_input_feat_size(self):
