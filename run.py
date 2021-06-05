@@ -15,6 +15,8 @@ def add_model_params(parser):
     group = parser.add_argument_group()
 
     group.add_argument("--model", "-m", type=str, help="Name of the model to run", nargs="+", required=True)
+    group.add_argument("--scheduler-step", "-ss", type=int, help="Step size of the learning rate scheduler", default=3)
+    group.add_argument("--gamma", type=float, help="Gamma value for the scheduler", default=0.1)
     group.add_argument("--lr", type=float, help="The learning rate to be applied on the optimizer", default=1e-3)
     group.add_argument("--dropout", type=float, help="The dropout to apply on the model", default=0.1)
     group.add_argument(
@@ -135,7 +137,7 @@ def start(args):
 
             criterion = nn.CrossEntropyLoss()
             optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
-            scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+            scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.scheduler_step, gamma=args.gamma)
 
             reproducible(args.seed)
             karen.training.train(
