@@ -1,6 +1,7 @@
 from re import S
 import torch
 import torch.nn as nn
+from torch.nn.utils.rnn import pad_packed_sequence
 from ..base_model import BaseModel
 from ..register_model import RegisterModel
 from transformers import BertTokenizer, BertModel
@@ -60,24 +61,27 @@ class AngryBERT(BaseModel):
         self.ffn = FFN(ffn_dim, out_feat, dropout)
 
         self.dropout = nn.Dropout(dropout)
+        self.activation = nn.ReLU()
         self.device = device
 
     def forward(self, data):
         emb = self.embeddings(data["tokens"])
         self.bilstm.flatten_parameters()
-        print(emb.shape)
-        bilstmout, _ = self.bilstm(emb)
-        bilstmout = bilstmout[:, 0, :]
+
+        padded_data = nn.utils.rnn.pack_padded_sequence(emb, data['mask'].sum(dim=-1).cpu(), batch_first=True, enforce_sorted=False)
+
+        bilstmout, _ = self.bilstm(padded_data)
+        bilstmout, _ = nn.utils.rnn.pad_packed_sequence(bilstmout, batch_first=True)
+        bilstmout = self.dropout(bilstmout[:, 0, :])
 
         inputs = self.tokenizer(data["text"], padding=True, return_tensors="pt").to(self.device)
         bertout = self.bert(**inputs).pooler_output
         bertout = self.dropout(bertout)
 
         gatein = torch.cat((bilstmout, bertout), dim=-1)
-        chosen = self.gate(gatein)
+        chosen = self.activation(self.dropout(self.gate(gatein)))
 
         res = self.ffn(chosen)
-        print(res.shape)
         return res
 
     @staticmethod
