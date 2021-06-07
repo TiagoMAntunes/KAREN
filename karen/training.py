@@ -111,9 +111,9 @@ def train(
                 c += 1
 
                 if i % display_freq == 0:
-                    progress.set_postfix({"loss": totloss / (i + 1), "lr": round(scheduler.get_last_lr()[0], 6)})
+                    progress.set_postfix({"loss": totloss / (i + 1), "lr": scheduler.get_last_lr()[0]})
 
-        # scheduler.step()
+        scheduler.step()
 
         accuracy, scores = eval(model, dev, device)
         print(f"Epoch #{iteration + 1} validation accuracy = {accuracy:4f}")

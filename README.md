@@ -74,6 +74,7 @@ HateXPlain evaluation. Precision, Recall and F1-score are the results from the h
 | Transformer (1 layer)	| 0.486| 	0.495	| 0.6	| 0.543| 
 | Transformer (2 layers)| 	0.532| 	0.551	| 0.732| 	0.629| 
 | CharCNN | 0.552 | 0.65 | 0.61 | 0.63 |
+| **AngryBERT (primary only)** | **0.649** | **0.736** | **0.695** | **0.764** |
 | **DistilBERT** | **0.646** | **0.766** | **0.704** | **0.734** |
 | RNN + GloVe	| 0.546| 	0.59	| 0.779	| 0.672| 
 | **CNN + GloVe**	| **0.644**	| **0.69** | **0.767**| **0.726**| 
@@ -83,3 +84,4 @@ HateXPlain evaluation. Precision, Recall and F1-score are the results from the h
 | Transformer (1 layer) + GloVe	| 0.564	| 0.581	| 0.785	| 0.668| 
 | Transformer (2 layers) + GloVe| 	0.572| 	0.751| 	0.609	| 0.672| 
 | CharCNN + Glove | 0.573 | 0.631 | 0.753 | 0.686 | 
+| **AngryBERT + Glove (primary only)** | **0.660** | **0.75** | **0.771** | **0.76** |
