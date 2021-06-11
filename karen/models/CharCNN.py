@@ -6,6 +6,9 @@ from ..register_model import RegisterModel
 
 @RegisterModel("CharCNN")
 class CharCNN(BaseModel):
+    """
+    CharCNN https://arxiv.org/abs/1509.01626
+    """
     def __init__(
         self,
         embeddings,
