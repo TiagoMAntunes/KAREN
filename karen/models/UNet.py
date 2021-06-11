@@ -16,7 +16,7 @@ def convnorm(in_ch, out_ch, ks):
 @RegisterModel("UNet")
 class UNet(BaseModel):
     """
-    Adaptation of WavUNet https://arxiv.org/pdf/1806.03185.pdf to suit the hate speech detection setting.
+    Adaptation of WavUNet https://arxiv.org/pdf/1806.03185.pdf
     """
 
     def __init__(
