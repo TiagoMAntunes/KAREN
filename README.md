@@ -85,3 +85,7 @@ HateXPlain evaluation. Precision, Recall and F1-score are the results from the h
 | Transformer (2 layers) + GloVe| 	0.572| 	0.751| 	0.609	| 0.672| 
 | CharCNN + Glove | 0.573 | 0.631 | 0.753 | 0.686 | 
 | **AngryBERT + Glove (primary only)** | **0.660** | **0.75** | **0.771** | **0.76** |
+| UNet + Glove | 0.568 | 0.692 | 0.649 | 0.670 |
+| UNet + Glove (using linear) | 0.553 | 0.624 | 0.631 | 0.628 |
+| UNet | 0.560 | 0.634 | 0.659 | 0.620 |
+| UNet (using linear) | 0.559 | 0.666 | 0.688 | 0.677 |
