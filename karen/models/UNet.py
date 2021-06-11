@@ -120,15 +120,15 @@ class UNet(BaseModel):
     def add_required_arguments(parser):
         group = parser.add_argument_group()
 
-        group.add_argument("--unet-depth", type=int, default=8, help="Depth of UNet")
+        group.add_argument("--unet-depth", type=int, default=6, help="Depth of UNet")
         group.add_argument(
             "--unet-channel-jump",
             type=int,
-            default=16,
+            default=32,
             help="Convolutional channels increase by this amount when encoding",
         )
-        group.add_argument("--unet-encoding-ks", type=int, default=15, help="Encoding kernel size")
-        group.add_argument("--unet-decoding-ks", type=int, default=5, help="Decoding kernel size")
+        group.add_argument("--unet-encoding-ks", type=int, default=9, help="Encoding kernel size")
+        group.add_argument("--unet-decoding-ks", type=int, default=9, help="Decoding kernel size")
         group.add_argument(
             "--unet-use-linear",
             type=bool,
