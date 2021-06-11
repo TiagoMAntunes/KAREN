@@ -24,12 +24,13 @@ class UNet(BaseModel):
         channel_jump,
         encoding_ks,
         decoding_ks,
+        use_linear,
     ):
         super(UNet, self).__init__()
         self.embeddings = embeddings
         channels_in = self.embeddings.weight.shape[-1]
 
-        self.init_linear_converters(unet_depth, in_feat, out_feat)
+        self.init_linear_converters(unet_depth, in_feat, out_feat, use_linear)
         self.init_channel_sizes(channel_jump, unet_depth, channels_in)
 
         self.depth = unet_depth
@@ -50,13 +51,14 @@ class UNet(BaseModel):
         self.upsample = nn.Upsample(scale_factor=2, mode="linear", align_corners=False)
         self.downsample = nn.MaxPool1d(2)
 
-    def init_linear_converters(self, unet_depth, in_feat, out_feat):
-        linear_size = max(int(2 ** unet_depth), int(2 ** int(log2(in_feat))))
-        self.conversion_lin_in = nn.Linear(in_feat, linear_size)
-        self.conversion_lin_out = nn.Linear(linear_size, out_feat)
+    def init_linear_converters(self, unet_depth, in_feat, out_feat, ul):
+        self.linear_size = max(int(2 ** unet_depth), int(2 ** int(log2(in_feat))))
+        self.conversion_lin_in = nn.Linear(in_feat, self.linear_size)
+        self.resize_image = nn.Upsample(size=self.linear_size, mode="linear", align_corners=False)
+        self.conversion_lin_out = nn.Linear(self.linear_size, out_feat)
         print(
-            "Unet needs to convert the sentence length to max({}, {}) in order to work correctly\n".format(
-                int(2 ** unet_depth), int(2 ** int(log2(in_feat)))
+            "Unet needs to convert the sentence length to max({}, {}) in order to work correctly.\nResize performed using {}.\n".format(
+                int(2 ** unet_depth), int(2 ** int(log2(in_feat))), "linear layer" if ul else "linear upsampling"
             )
         )
 
@@ -90,7 +92,8 @@ class UNet(BaseModel):
     def forward(self, x):
         x = x["tokens"]
         x = self.embeddings(x).permute(0, 2, 1)
-        x = self.conversion_lin_in(x)
+        x = self.resize_image(x)
+        # x = self.conversion_lin_in(x)
 
         encoder = list()
         input = x
@@ -126,6 +129,12 @@ class UNet(BaseModel):
         )
         group.add_argument("--unet-encoding-ks", type=int, default=15, help="Encoding kernel size")
         group.add_argument("--unet-decoding-ks", type=int, default=5, help="Decoding kernel size")
+        group.add_argument(
+            "--unet-use-linear",
+            type=bool,
+            default=False,
+            help="Use neural network for image resizing (True) or use simple upsampling",
+        )
 
     @staticmethod
     def make_model(args):
@@ -137,6 +146,7 @@ class UNet(BaseModel):
             args.unet_channel_jump,
             args.unet_encoding_ks,
             args.unet_decoding_ks,
+            args.unet_use_linear,
         )
 
     @staticmethod
