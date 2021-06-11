@@ -11,5 +11,3 @@ from .NetLSTM import NetLSTM
 from .CharCNN import CharCNN
 from .AngryBERT import AngryBERT
 from .UNet import UNet
-
-# from .Seq2SeqAttention import Seq2SeqAttention
