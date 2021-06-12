@@ -22,7 +22,7 @@ def add_model_params(parser):
     group.add_argument(
         "--embeddings", type=str, help="In case of using pretrained embeddings, the type to use", default=None
     )
-    group.add_argument("--embedding-dim", type=int, help="The size of the embeddings to use", default=200)
+    group.add_argument("--embedding-dim", type=int, help="The size of the embeddings to use", default=0)
 
 
 def add_dataset_params(parser):
@@ -101,7 +101,11 @@ def get_embeddings(args):
     if name not in EMBEDDINGS:
         raise ValueError(f"Framework does not support {args.embeddings}.")
 
-    return EMBEDDINGS[name].get(dim=args.embedding_dim)
+    if args.embedding_dim:
+        return EMBEDDINGS[name].get(dim=args.embedding_dim)
+    else:
+        print('Running embeddings with default size...')
+        return EMBEDDINGS[name].get()
 
 
 def start(args):
