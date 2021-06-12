@@ -98,13 +98,16 @@ class TwitterGlove(Glove):
     def get(cls, dim=200):
         URL = "http://downloads.cs.stanford.edu/nlp/data/wordvecs/glove.twitter.27B.zip"
         NAME = SAVEFOLDER + "glove_twitter/"
-        
+
         files = {
             25: "glove.twitter.27B.25d.txt",
             50: "glove.twitter.27B.50d.txt",
             100: "glove.twitter.27B.100d.txt",
             200: "glove.twitter.27B.200d.txt",
         }
+
+        if dim not in files:
+            raise ValueError(f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}')
 
         return super(TwitterGlove, cls).get(URL=URL, NAME=NAME, FILES=files, dim=dim)
 
@@ -113,13 +116,16 @@ class TwitterGlove(Glove):
 class CommonGlove(Glove):
 
     @classmethod
-    def get(cls, dim=200):
+    def get(cls, dim=300):
         URL = "https://nlp.stanford.edu/data/wordvecs/glove.42B.300d.zip"
         NAME = SAVEFOLDER + "glove_common/"
 
         files = {
             300: "glove.42B.300d.txt"
         }
+
+        if dim not in files:
+            raise ValueError(f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}')
 
         return super(CommonGlove, cls).get(URL=URL, NAME=NAME, FILES=files, dim=dim)
 
@@ -137,5 +143,8 @@ class WikipediaGlove(Glove):
             200: "glove.6B.200d.txt",
             300: "glove.6B.300d.txt"
         }
+
+        if dim not in files:
+            raise ValueError(f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}')
 
         return super(WikipediaGlove, cls).get(URL=URL, NAME=NAME, FILES=files, dim=dim)

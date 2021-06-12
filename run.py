@@ -22,7 +22,7 @@ def add_model_params(parser):
     group.add_argument(
         "--embeddings", type=str, help="In case of using pretrained embeddings, the type to use", default=None
     )
-    group.add_argument("--embedding-dim", type=int, help="The size of the embeddings to use", default=0)
+    group.add_argument("--embedding-dim", type=int, help="The size of the embeddings to use", default=None)
 
 
 def add_dataset_params(parser):
@@ -133,6 +133,8 @@ def start(args):
                 args.embeddings = nn.Embedding.from_pretrained(torch.tensor(values[indices]))
             else:
                 # not pretrained ones, generate default embeddings
+                if not args.embedding_dim:
+                    raise ValueError(f"No embedding dimension specified.")
                 args.embeddings = nn.Embedding(args.vocab_size, args.embedding_dim)
 
             reproducible(i)
