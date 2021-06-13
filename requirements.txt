@@ -1,7 +1,9 @@
-numpy 
-torch 
-tqdm 
+numpy
+torch
+tqdm
 transformers
 sklearn
 tabulate
 wget
+pandas
+nltk
