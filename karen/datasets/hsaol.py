@@ -87,10 +87,10 @@ class Hsaol(BaseDataset):
         df = pd.read_csv(self.location)
 
         raw_tweets = df['tweet'].values
-        labels = df['class'].values
+        label = df['class'].values
 
-        assert len(raw_tweets) == len(labels)
-        dset_len = len(labels)
+        assert len(raw_tweets) == len(label)
+        dset_len = len(label)
 
         tokens = []
         vocab = set()
@@ -100,6 +100,11 @@ class Hsaol(BaseDataset):
             vocab.update(set(tokenized_tweet))
             tokens.append(tokenized_tweet)
 
+        label_to_idx = {
+            'hate speech': 0,
+            'offensive language': 1,
+            'neither': 2
+        }
         word_to_idx = {word: i for i, word in enumerate(sorted(list(vocab)))}
 
         # padding of tokens and transformation
@@ -116,13 +121,13 @@ class Hsaol(BaseDataset):
             "id": np.array(ids, dtype=int),
             "tokens": np.array(newtokens, dtype=int),
             "mask": np.array(padding_mask, dtype=bool),
-            "label": np.array(labels, dtype=int),
+            "label": np.array(label, dtype=int),
             "text": text,
         }
 
         self.extras = {}
 
-        self.labels = labels
+        self.label_to_idx = label_to_idx
         self.words2idx = word_to_idx
         self.preprocessed = True
         self.len = dset_len
@@ -145,7 +150,7 @@ class Hsaol(BaseDataset):
         if not self.preprocessed:
             self.preprocess()
 
-        return 3
+        return len(self.label_to_idx)
 
     @staticmethod
     def make_dataset(args):
@@ -169,7 +174,7 @@ class Hsaol(BaseDataset):
         return len(self.words2idx)
 
     def get_labels(self):
-        return self.labels
+        return list(self.label_to_idx.keys())
 
     def get_extra_properties(self):
         return self.extras
