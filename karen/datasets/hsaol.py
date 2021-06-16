@@ -86,27 +86,24 @@ class Hsaol(BaseDataset):
 
         df = pd.read_csv(self.location)
 
-        raw_tweets_unfiltered = df['tweet'].values
+        raw_tweets = df['tweet'].values
         label_unfiltered = df['class'].values
 
-        raw_tweets = []
-        label = []
-
-        for i in range(len(raw_tweets_unfiltered)):
-            if len(raw_tweets_unfiltered[i]) > 0:
-                raw_tweets.append(raw_tweets_unfiltered[i])
-                label.append(label_unfiltered[i])
-
-        assert len(raw_tweets) == len(label)
-        dset_len = len(label)
+        assert len(raw_tweets) == len(label_unfiltered)
 
         tokens = []
+        label = []
         vocab = set()
 
-        for i in range(dset_len):
+        for i in range(len(label_unfiltered)):
             tokenized_tweet = tokenize(preprocess(raw_tweets[i]))
-            vocab.update(set(tokenized_tweet))
-            tokens.append(tokenized_tweet)
+            if (len(tokenized_tweet) > 0):
+                vocab.update(set(tokenized_tweet))
+                tokens.append(tokenized_tweet)
+                label.append(label_unfiltered[i])
+
+        assert len(tokens) == len(label)
+        dset_len = len(label)
 
         label_to_idx = {
             'hate speech': 0,
