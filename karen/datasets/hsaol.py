@@ -86,8 +86,16 @@ class Hsaol(BaseDataset):
 
         df = pd.read_csv(self.location)
 
-        raw_tweets = df['tweet'].values
-        label = df['class'].values
+        raw_tweets_unfiltered = df['tweet'].values
+        label_unfiltered = df['class'].values
+
+        raw_tweets = []
+        label = []
+
+        for i in range(len(raw_tweets_unfiltered)):
+            if len(raw_tweets_unfiltered[i]) > 0:
+                raw_tweets.append(raw_tweets_unfiltered[i])
+                label.append(label_unfiltered[i])
 
         assert len(raw_tweets) == len(label)
         dset_len = len(label)
