@@ -33,6 +33,7 @@ def download(url, savelocation):
     print()
     return True
 
+
 class Glove(BaseEmbedding):
     """
     GloVe embeddings
@@ -78,26 +79,28 @@ class Glove(BaseEmbedding):
 
     @classmethod
     def get(cls, **kwargs):
-        cls.process(kwargs['URL'], kwargs['NAME'])
+        cls.process(kwargs["URL"], kwargs["NAME"])
 
-        files = kwargs['FILES']
+        files = kwargs["FILES"]
 
-        if kwargs['dim'] not in files:
+        if kwargs["dim"] not in files:
             raise ValueError(f"Unavailable embedding dim {kwargs['dim']} for Glove Embeddings")
 
-        with open(kwargs['NAME'] + files[kwargs['dim']] + ".vocab") as f:
+        with open(kwargs["NAME"] + files[kwargs["dim"]] + ".vocab") as f:
             vocab = f.read().split()
 
-        return vocab, np.load(kwargs['NAME'] + files[kwargs['dim']] + ".embeddings.npy")
+        return vocab, np.load(kwargs["NAME"] + files[kwargs["dim"]] + ".embeddings.npy")
 
 
-@RegisterEmbedding('TwitterGlove')
+@RegisterEmbedding("TwitterGlove")
 class TwitterGlove(Glove):
-    
     @classmethod
-    def get(cls, dim=200):
+    def get(cls, dim=200, is_default=False):
         URL = "http://downloads.cs.stanford.edu/nlp/data/wordvecs/glove.twitter.27B.zip"
         NAME = SAVEFOLDER + "glove_twitter/"
+
+        if is_default:
+            print("No embedding_dim argument specified, training using the default value {}\n".format(dim))
 
         files = {
             25: "glove.twitter.27B.25d.txt",
@@ -107,44 +110,53 @@ class TwitterGlove(Glove):
         }
 
         if dim not in files:
-            raise ValueError(f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}')
+            raise ValueError(
+                f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}'
+            )
 
         return super(TwitterGlove, cls).get(URL=URL, NAME=NAME, FILES=files, dim=dim)
 
 
-@RegisterEmbedding('CommonGlove')
+@RegisterEmbedding("CommonGlove")
 class CommonGlove(Glove):
-
     @classmethod
-    def get(cls, dim=300):
+    def get(cls, dim=300, is_default=False):
         URL = "https://nlp.stanford.edu/data/wordvecs/glove.42B.300d.zip"
         NAME = SAVEFOLDER + "glove_common/"
 
-        files = {
-            300: "glove.42B.300d.txt"
-        }
+        if is_default:
+            print("No embedding_dim argument specified, training using the default value {}\n".format(dim))
+
+        files = {300: "glove.42B.300d.txt"}
 
         if dim not in files:
-            raise ValueError(f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}')
+            raise ValueError(
+                f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}'
+            )
 
         return super(CommonGlove, cls).get(URL=URL, NAME=NAME, FILES=files, dim=dim)
 
-@RegisterEmbedding('WikipediaGlove')
-class WikipediaGlove(Glove):
 
+@RegisterEmbedding("WikipediaGlove")
+class WikipediaGlove(Glove):
     @classmethod
-    def get(cls, dim=300):
-        URL = 'https://nlp.stanford.edu/data/wordvecs/glove.6B.zip'
-        NAME = SAVEFOLDER + 'glove_wikipedia/'
+    def get(cls, dim=300, is_default=False):
+        URL = "https://nlp.stanford.edu/data/wordvecs/glove.6B.zip"
+        NAME = SAVEFOLDER + "glove_wikipedia/"
+
+        if is_default:
+            print("No embedding_dim argument specified, training using the default value {}\n".format(dim))
 
         files = {
             50: "glove.6B.50d.txt",
             100: "glove.6B.100d.txt",
             200: "glove.6B.200d.txt",
-            300: "glove.6B.300d.txt"
+            300: "glove.6B.300d.txt",
         }
 
         if dim not in files:
-            raise ValueError(f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}')
+            raise ValueError(
+                f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}'
+            )
 
         return super(WikipediaGlove, cls).get(URL=URL, NAME=NAME, FILES=files, dim=dim)

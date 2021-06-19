@@ -60,7 +60,7 @@ def get_specific_model_params(parser, args):
         print(
             "Invalid model selection: {}. Available models:\n- {}".format(invalid, "\n- ".join(sorted(MODELS.keys())))
         )
-        raise ValueError("Invalid model selection")
+        raise ValueError("Invalid model selection.")
 
     for m in args.model:
         MODELS[m].add_required_arguments(group)
@@ -104,8 +104,7 @@ def get_embeddings(args):
     if args.embedding_dim:
         return EMBEDDINGS[name].get(dim=args.embedding_dim)
     else:
-        print('Running embeddings with default size...')
-        return EMBEDDINGS[name].get()
+        return EMBEDDINGS[name].get(is_default=True)
 
 
 def start(args):
@@ -123,7 +122,7 @@ def start(args):
         args.device = "cpu" if args.cpu or not torch.cuda.is_available() else "cuda"
 
         for modelname in args.model:
-            print(f"\nStarting training of (Model={modelname} Dataset={datasetname})")
+            print(f"\nTraining started (Model = {modelname}, Dataset = {datasetname})")
 
             if vocab:
                 # pretrained embeddings, now needs to get the vocab list conversion
@@ -138,7 +137,7 @@ def start(args):
                 args.embeddings = nn.Embedding(args.vocab_size, args.embedding_dim)
 
             reproducible(i)
-            i+=1
+            i += 1
             model = MODELS[modelname].make_model(args)
 
             criterion = nn.CrossEntropyLoss()
