@@ -22,7 +22,7 @@ def add_model_params(parser):
     group.add_argument(
         "--embeddings", type=str, help="In case of using pretrained embeddings, the type to use", default=None
     )
-    group.add_argument("--embedding-dim", type=int, help="The size of the embeddings to use", default=200)
+    group.add_argument("--embedding-dim", type=int, help="The size of the embeddings to use", default=None)
 
 
 def add_dataset_params(parser):
@@ -60,7 +60,7 @@ def get_specific_model_params(parser, args):
         print(
             "Invalid model selection: {}. Available models:\n- {}".format(invalid, "\n- ".join(sorted(MODELS.keys())))
         )
-        raise ValueError("Invalid model selection")
+        raise ValueError("Invalid model selection.")
 
     for m in args.model:
         MODELS[m].add_required_arguments(group)
@@ -101,7 +101,10 @@ def get_embeddings(args):
     if name not in EMBEDDINGS:
         raise ValueError(f"Framework does not support {args.embeddings}.")
 
-    return EMBEDDINGS[name].get(dim=args.embedding_dim)
+    if args.embedding_dim:
+        return EMBEDDINGS[name].get(dim=args.embedding_dim)
+    else:
+        return EMBEDDINGS[name].get(is_default=True)
 
 
 def start(args):
@@ -119,7 +122,7 @@ def start(args):
         args.device = "cpu" if args.cpu or not torch.cuda.is_available() else "cuda"
 
         for modelname in args.model:
-            print(f"\nStarting training of (Model={modelname} Dataset={datasetname})")
+            print(f"\nTraining started (Model = {modelname}, Dataset = {datasetname})")
 
             if vocab:
                 # pretrained embeddings, now needs to get the vocab list conversion
@@ -129,10 +132,12 @@ def start(args):
                 args.embeddings = nn.Embedding.from_pretrained(torch.tensor(values[indices]))
             else:
                 # not pretrained ones, generate default embeddings
+                if not args.embedding_dim:
+                    raise ValueError(f"No embedding dimension specified.")
                 args.embeddings = nn.Embedding(args.vocab_size, args.embedding_dim)
 
             reproducible(i)
-            i+=1
+            i += 1
             model = MODELS[modelname].make_model(args)
 
             criterion = nn.CrossEntropyLoss()
