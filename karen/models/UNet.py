@@ -48,7 +48,7 @@ class UNet(BaseModel):
         self.middle = convnorm(self.echannelout[-1], self.echannelout[-1], encoding_ks)
 
         self.out = nn.Sequential(
-            nn.Conv1d(channels_in + (channels_in // channel_jump + 1) * channel_jump, 1, 1),
+            nn.Conv1d(channels_in + (channels_in // channel_jump + 1) * channel_jump, channels_in, 1),
             nn.Tanh(),
         )
 
@@ -57,7 +57,7 @@ class UNet(BaseModel):
 
     def init_linear_converters(self, unet_depth, in_feat, out_feat, ul):
         self.linear_size = max(int(2 ** unet_depth), int(2 ** int(log2(in_feat) + 1)))
-        self.conversion_lin_out = nn.Linear(self.linear_size, out_feat)
+        self.conversion_lin_out = nn.Linear(self.embeddings.weight.shape[-1] * self.linear_size, out_feat)
         if ul:
             self.resize_image = nn.Linear(in_feat, self.linear_size)
             print("Resize with linear layer")
@@ -119,7 +119,7 @@ class UNet(BaseModel):
             x = self.decoder[i](x)
         x = torch.cat([x, input], dim=1)
 
-        x = self.out(x).squeeze()
+        x = self.out(x).view(x.shape[0], -1)
         x = self.conversion_lin_out(x)
         return x
 
