@@ -76,7 +76,6 @@ ETHOS evaluation. Precision, Recall and F1-score are the results from the hate s
 | Transformer (1 layer)	| 0.556 | 0.6 | 0.143 | 0.231	|
 | Transformer (2 layers)| 0.478 | 0.468	| 0.881 | 0.612 |
 | UNet | 0.478 | 0.471 |0.976  | 0.636 |
-| UNet (using linear) | 0.522 |  0.455|0.119  | 0.189 |
 | **DistilBERT** | **0.744** |  **0.757** | **0.667** |**0.709** |
 | **AngryBERT (primary only)** | **0.711**|**0.674**  |**0.738** | **0.705** |
 | RNN + GloVe	| 0.544| 	0.514	| 0.429 | 0.468|
@@ -87,10 +86,9 @@ ETHOS evaluation. Precision, Recall and F1-score are the results from the hate s
 | Transformer (1 layer) + GloVe	| 0.611	| 0.569	| 0.690	| 0.624 |
 | Transformer (2 layers) + GloVe| 0.489 | 0.463 | 0.595 | 0.521 |
 | **UNet + Glove** | **0.722** | **0.707** | **0.690** | **0.699** |
-| UNet + Glove (using linear) |0.533 | 0   | 0 |  0|
 | **AngryBERT + Glove (primary only)** |  **0.733** | **0.75**  | **0.643** |  **0.692**|
 | **Bert** | **0.756** | **0.763**	|  **0.690**| **0.725** |
 | CharCNN + GloVe | 0.533 | 	0	| 0 | 0 |
 | CharCNN + GloVe	| 0.533 | 	0 | 	0| 	0 |
 | VDCNN | 0.5 | 0.459 | 0.405 | 0.430 |
-| VDCNN + Glove | 0.755 | 0.708 | 0.810 | 0.756 |
+| **VDCNN + Glove** | **0.755** | **0.708** | **0.810** | **0.756* |

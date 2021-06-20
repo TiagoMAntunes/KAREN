@@ -1,6 +1,7 @@
 # KAREN: Unifying Hatespeech Detection and Benchmarking
 
-This project started as a course project for the 2021 Natural Language Processing course at Tsinghua University and is still a work in progress. Contributions are accepted for further work.
+This project started as a course project for the 2021 Natural Language Processing course at Tsinghua University and is still a work in progress. Our final project report is available in [report.pdf](report.pdf)
+Contributions are accepted for further work.
 
 ## Introduction
 
