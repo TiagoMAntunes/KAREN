@@ -28,10 +28,10 @@ HateXPlain evaluation. Precision, Recall and F1-score are the results from the h
 | Transformer (2 layers) + GloVe| 	0.572| 	0.751| 	0.609	| 0.672|
 | CharCNN + Glove | 0.573 | 0.631 | 0.753 | 0.686 |
 | **AngryBERT + Glove (primary only)** | **0.660** | **0.75** | **0.771** | **0.76** |
-| UNet + Glove | 0.568 | 0.692 | 0.649 | 0.670 |
-| UNet + Glove (using linear) | 0.553 | 0.624 | 0.631 | 0.628 |
-| UNet | 0.560 | 0.634 | 0.659 | 0.620 |
-| UNet (using linear) | 0.559 | 0.666 | 0.688 | 0.677 |
+| UNet + Glove | 0.602 | 0.714 | 0.670 | 0.691 |
+| UNet | 0.548 | 0.646 | 0.670 |  0.657 |
+| VDCNN| 0.563 | 0.582633 | 0.776119 | 0.6656 |
+| VDCNN + Glove | 0.598 | 0.655 | 0.709 | 0.681 |
 
 ## HSAOL Results
 HSAOL evaluation. Precision, Recall and F1-score are the results from the hate speech class. Due to the imbalanced nature of this dataset, the results from the hate speech class may be suboptimal.
@@ -46,9 +46,7 @@ HSAOL evaluation. Precision, Recall and F1-score are the results from the hate s
 | GRU	| 0.904	| 0 | 0	| 0 |
 | Transformer (1 layer)	| 0.876 | 0.448 | 0.104 | 0.169	|
 | Transformer (2 layers)| 0.887 | 0.4	| 0.192 | 0.26 |
-| UNet | 0.902 | 0.167 | 0.008 |  0.016 |
-| UNet (using linear) | 0.882 | 0.246 | 0.118 | 0.160 |
-| VDCNN| 0.563 | 0.582633 | 0.776119 | 0.6656 |
+| UNet | 0.897 | 0.475 |  0.224  |  0.304 |
 | DistilBERT | 0.908 | 0.441  | 0.345| 0.387 |
 | AngryBERT (primary only) | 0.908 | 0.3 | 0.024 | 0.044 |
 | RNN + GloVe	| 0.898| 	0	| 0 | 0|
@@ -58,10 +56,8 @@ HSAOL evaluation. Precision, Recall and F1-score are the results from the hate s
 | NetLSTM + GloVe	| 0.906 | 	0.397 | 	0.193| 	0.260 |
 | Transformer (1 layer) + GloVe	| 0.892	| 0.471	| 0.128	| 0.201 |
 | Transformer (2 layers) + GloVe| 0.907 | 0.474 | 0.216 | 0.287
-| UNet + Glove | 0.909 | 0 | 0 | 0 |
-| UNet + Glove (using linear) | 0.901 | 0.391 | 0.210 | 0.273 |
+| UNet + Glove | 0.912 | 0.524  | 0.264 | 0.351 |
 | AngryBERT + Glove (primary only) |  0.913 | 0.385 | 0.12 | 0.183 |
-| **Bert** | **0.918** | **0.552**	| **0.38**4 | **0.453** |
+| **Bert** | **0.918** | **0.552**	| **0.384** | **0.453** |
 | CharCNN |  N/A |  N/A |  N/A |  N/A |
 | CharCNN + Glove |  N/A |  N/A |  N/A |  N/A |
-| VDCNN + Glove | 0.598 | 0.655 | 0.709 | 0.681 |
