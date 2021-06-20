@@ -60,4 +60,4 @@ For registering datasets, you must use the `@RegisterDataset` decorator and add 
 
 
 ## Initial Results
-Results can be seen in results.md (todo: linkify).
+Results can be seen in https://github.com/TiagoMAntunes/KAREN/results.md
