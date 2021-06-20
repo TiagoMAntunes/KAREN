@@ -123,7 +123,8 @@ def start(args):
 
         for modelname in args.model:
             print(f"\nTraining started (Model = {modelname}, Dataset = {datasetname})")
-
+            
+            reproducible(i+1)
             if vocab:
                 # pretrained embeddings, now needs to get the vocab list conversion
                 words2idx = d.words_to_idx()

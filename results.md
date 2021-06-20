@@ -61,3 +61,35 @@ HSAOL evaluation. Precision, Recall and F1-score are the results from the hate s
 | **Bert** | **0.918** | **0.552**	| **0.384** | **0.453** |
 | CharCNN |  N/A |  N/A |  N/A |  N/A |
 | CharCNN + Glove |  N/A |  N/A |  N/A |  N/A |
+| VDCNN + Glove | 0.598 | 0.655 | 0.709 | 0.681 |
+
+## ETHOS Results
+ETHOS evaluation. Precision, Recall and F1-score are the results from the hate speech class.
+
+| Model	| Accuracy	| Precision	| Recall | F1|
+| ------| ----------| ----------| -------| --|
+| CNN	| 0.644 | 0.639	| 0.548	| 0.590	|
+| Softmax Regression	| 0.467	| 0.465	| 0.952	| 0.625  |
+| RNN	| 0.522	| 0.4 |	0.048 |	0.085|
+| BiLSTM| 	0.589| 	0.619 | 	0.310 | 	0.413 |
+| NetLSTM	| 0.544| 	0.6 | 	0.071| 	0.128 |
+| GRU	| 0.6	| 0.588 | 0.476	| 0.526|
+| Transformer (1 layer)	| 0.556 | 0.6 | 0.143 | 0.231	|
+| Transformer (2 layers)| 0.478 | 0.468	| 0.881 | 0.612 |
+| UNet | 0.478 | 0.471 |0.976  | 0.636 |
+| UNet (using linear) | 0.522 |  0.455|0.119  | 0.189 |
+| **DistilBERT** | **0.744** |  **0.757** | **0.667** |**0.709** |
+| **AngryBERT (primary only)** | **0.711**|**0.674**  |**0.738** | **0.705** |
+| RNN + GloVe	| 0.544| 	0.514	| 0.429 | 0.468|
+| CNN + GloVe	| 0.644 | 0.639 | 0.548 | 0.590 |
+| BiLSTM + GloVe	| 0.656 | 	0.628	| 0.643 | 	0.635 |
+| **GRU + GloVe** | **0.711** | 	**0.674**	| **0.738** | **0.705** |
+| NetLSTM + GloVe	| 0.644 | 	0.614 | 	0.643| 	0.628 |
+| Transformer (1 layer) + GloVe	| 0.611	| 0.569	| 0.690	| 0.624 |
+| Transformer (2 layers) + GloVe| 0.489 | 0.463 | 0.595 | 0.521
+| **UNet + Glove** | **0.722** | **0.707** | **0.690** | **0.699** |
+| UNet + Glove (using linear) |0.533 | 0   | 0 |  0|
+| **AngryBERT + Glove (primary only)** |  **0.733** | **0.75**  | **0.643** |  **0.692**|
+| **Bert** | **0.756** | **0.763**	|  **0.690**| **0.725** |
+| CharCNN + GloVe | 0.533 | 	0	| 0 | 0 |
+| CharCNN + GloVe	| 0.533 | 	0 | 	0| 	0 |
