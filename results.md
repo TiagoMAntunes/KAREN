@@ -48,6 +48,7 @@ HSAOL evaluation. Precision, Recall and F1-score are the results from the hate s
 | Transformer (2 layers)| 0.887 | 0.4	| 0.192 | 0.26 |
 | UNet | 0.902 | 0.167 | 0.008 |  0.016 |
 | UNet (using linear) | 0.882 | 0.246 | 0.118 | 0.160 |
+| VDCNN| 0.563 | 0.582633 | 0.776119 | 0.6656 |
 | DistilBERT | 0.908 | 0.441  | 0.345| 0.387 |
 | AngryBERT (primary only) | 0.908 | 0.3 | 0.024 | 0.044 |
 | RNN + GloVe	| 0.898| 	0	| 0 | 0|
@@ -63,3 +64,4 @@ HSAOL evaluation. Precision, Recall and F1-score are the results from the hate s
 | **Bert** | **0.918** | **0.552**	| **0.38**4 | **0.453** |
 | CharCNN |  N/A |  N/A |  N/A |  N/A |
 | CharCNN + Glove |  N/A |  N/A |  N/A |  N/A |
+| VDCNN + Glove | 0.598 | 0.655 | 0.709 | 0.681 |

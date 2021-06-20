@@ -9,6 +9,7 @@ class CharCNN(BaseModel):
     """
     CharCNN https://arxiv.org/abs/1509.01626
     """
+
     def __init__(
         self,
         embeddings,
@@ -37,6 +38,12 @@ class CharCNN(BaseModel):
         self.convolutional_layers = nn.Sequential(*self.convolutional_layers)
 
         conv_output_size = num_channels * ((seq_len - 96) // 27)
+
+        if conv_output_size < 1:
+            message = "Due to the number of convolutional layers in this model, this dataset with {} input features is not permissible.".format(
+                seq_len
+            )
+            raise ValueError(message)
 
         self.linear_layers = nn.Sequential(
             nn.Linear(conv_output_size, linear_size),
