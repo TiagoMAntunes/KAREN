@@ -151,5 +151,5 @@ def eval(model, test, device):
         correct.extend(batch["label"].cpu().numpy())
 
     accuracy = accuracy_score(correct, guesses)
-    scores = precision_recall_fscore_support(correct, guesses)
+    scores = precision_recall_fscore_support(correct, guesses, zero_division=0)
     return accuracy, scores
