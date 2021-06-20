@@ -61,7 +61,6 @@ HSAOL evaluation. Precision, Recall and F1-score are the results from the hate s
 | **Bert** | **0.918** | **0.552**	| **0.384** | **0.453** |
 | CharCNN |  N/A |  N/A |  N/A |  N/A |
 | CharCNN + Glove |  N/A |  N/A |  N/A |  N/A |
-| VDCNN + Glove | 0.598 | 0.655 | 0.709 | 0.681 |
 
 ## ETHOS Results
 ETHOS evaluation. Precision, Recall and F1-score are the results from the hate speech class.
