@@ -59,5 +59,5 @@ Datasets are implemented similar to models. You must extend `BaseDataset` from t
 For registering datasets, you must use the `@RegisterDataset` decorator and add the import in the `framework/datasets/__init__.py`. All the remaining logic is the same as for the models.
 
 
-## Initial Results
-Results can be seen in https://github.com/TiagoMAntunes/KAREN/results.md
+## Results
+The results are available in [results.md](results.md)
