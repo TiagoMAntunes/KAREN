@@ -7,10 +7,6 @@ from ..register_model import RegisterModel
 
 @RegisterModel("NetLSTM")
 class NetLSTM(BaseModel):
-    """
-    NetLSTM: https://dl.acm.org/doi/10.1162/neco.1997.9.8.1735
-    """
-
     def __init__(
         self,
         out_feat,

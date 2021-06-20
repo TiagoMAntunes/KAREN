@@ -34,7 +34,6 @@ def download(url, savelocation):
     return True
 
 
-@RegisterEmbedding("Glove")
 class Glove(BaseEmbedding):
     """
     GloVe embeddings
@@ -61,7 +60,7 @@ class Glove(BaseEmbedding):
             for name in tuple(filter(lambda x: x.endswith(".txt"), os.listdir(NAME))):
                 filename = NAME + name
                 embeddings = {}
-                dimension = int(name.split(".")[3][:-1])
+                dimension = int(name.split(".")[-2][:-1])
                 with open(filename, encoding="utf-8") as f:
                     for line in f:
                         line = line.split()
@@ -79,10 +78,29 @@ class Glove(BaseEmbedding):
                 del embeddings
 
     @classmethod
-    def get(cls, dim=200):
+    def get(cls, **kwargs):
+        cls.process(kwargs["URL"], kwargs["NAME"])
+
+        files = kwargs["FILES"]
+
+        if kwargs["dim"] not in files:
+            raise ValueError(f"Unavailable embedding dim {kwargs['dim']} for Glove Embeddings")
+
+        with open(kwargs["NAME"] + files[kwargs["dim"]] + ".vocab") as f:
+            vocab = f.read().split()
+
+        return vocab, np.load(kwargs["NAME"] + files[kwargs["dim"]] + ".embeddings.npy")
+
+
+@RegisterEmbedding("TwitterGlove")
+class TwitterGlove(Glove):
+    @classmethod
+    def get(cls, dim=200, is_default=False):
         URL = "http://downloads.cs.stanford.edu/nlp/data/wordvecs/glove.twitter.27B.zip"
         NAME = SAVEFOLDER + "glove_twitter/"
-        cls.process(URL, NAME)
+
+        if is_default:
+            print("No embedding_dim argument specified, training using the default value {}\n".format(dim))
 
         files = {
             25: "glove.twitter.27B.25d.txt",
@@ -92,9 +110,53 @@ class Glove(BaseEmbedding):
         }
 
         if dim not in files:
-            raise ValueError(f"Unavailable embedding dim {dim} for Glove Embeddings")
+            raise ValueError(
+                f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}'
+            )
 
-        with open(NAME + files[dim] + ".vocab") as f:
-            vocab = f.read().split()
+        return super(TwitterGlove, cls).get(URL=URL, NAME=NAME, FILES=files, dim=dim)
 
-        return vocab, np.load(NAME + files[dim] + ".embeddings.npy")
+
+@RegisterEmbedding("CommonGlove")
+class CommonGlove(Glove):
+    @classmethod
+    def get(cls, dim=300, is_default=False):
+        URL = "https://nlp.stanford.edu/data/wordvecs/glove.42B.300d.zip"
+        NAME = SAVEFOLDER + "glove_common/"
+
+        if is_default:
+            print("No embedding_dim argument specified, training using the default value {}\n".format(dim))
+
+        files = {300: "glove.42B.300d.txt"}
+
+        if dim not in files:
+            raise ValueError(
+                f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}'
+            )
+
+        return super(CommonGlove, cls).get(URL=URL, NAME=NAME, FILES=files, dim=dim)
+
+
+@RegisterEmbedding("WikipediaGlove")
+class WikipediaGlove(Glove):
+    @classmethod
+    def get(cls, dim=300, is_default=False):
+        URL = "https://nlp.stanford.edu/data/wordvecs/glove.6B.zip"
+        NAME = SAVEFOLDER + "glove_wikipedia/"
+
+        if is_default:
+            print("No embedding_dim argument specified, training using the default value {}\n".format(dim))
+
+        files = {
+            50: "glove.6B.50d.txt",
+            100: "glove.6B.100d.txt",
+            200: "glove.6B.200d.txt",
+            300: "glove.6B.300d.txt",
+        }
+
+        if dim not in files:
+            raise ValueError(
+                f'Dim {dim} is not a valid size for TwitterGlove. Available sizes: {[" ".join(files.keys())]}'
+            )
+
+        return super(WikipediaGlove, cls).get(URL=URL, NAME=NAME, FILES=files, dim=dim)
