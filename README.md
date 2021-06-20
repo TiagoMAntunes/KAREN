@@ -89,3 +89,5 @@ HateXPlain evaluation. Precision, Recall and F1-score are the results from the h
 | UNet + Glove (using linear) | 0.553 | 0.624 | 0.631 | 0.628 |
 | UNet | 0.560 | 0.634 | 0.659 | 0.620 |
 | UNet (using linear) | 0.559 | 0.666 | 0.688 | 0.677 |
+| VDCNN| 0.563 | 0.582633 | 0.776119 | 0.6656 |
+| VDCNN + Glove 17 | 0.598 | 0.655 | 0.709 | 0.681 |
