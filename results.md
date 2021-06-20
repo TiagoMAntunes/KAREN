@@ -49,17 +49,17 @@ HSAOL evaluation. Precision, Recall and F1-score are the results from the hate s
 | UNet | 0.902 | 0.167 | 0.008 |  0.016 |
 | UNet (using linear) | 0.882 | 0.246 | 0.118 | 0.160 |
 | DistilBERT | 0.908 | 0.441  | 0.345| 0.387 |
+| AngryBERT (primary only) | 0.908 | 0.3 | 0.024 | 0.044 |
 | RNN + GloVe	| 0.898| 	0	| 0 | 0|
 | **CNN + GloVe**	| **0.915**	| **0.518** | **0.244** | **0.331** |
 | BiLSTM + GloVe	| 0.906 | 	0	| 0 | 	0 |
 | GRU + GloVe | 0.909 | 	0	| 0 | 0 |
 | NetLSTM + GloVe	| 0.906 | 	0.397 | 	0.193| 	0.260 |
 | Transformer (1 layer) + GloVe	| 0.892	| 0.471	| 0.128	| 0.201 |
-| Transformer (2 layers) + GloVe| 0.907 | 0.474 | 0.216 | 0.287 |
+| Transformer (2 layers) + GloVe| 0.907 | 0.474 | 0.216 | 0.287
 | UNet + Glove | 0.909 | 0 | 0 | 0 |
 | UNet + Glove (using linear) | 0.901 | 0.391 | 0.210 | 0.273 |
-| Bert| N/A | 	N/A	| N/A | 	N/A |
+| AngryBERT + Glove (primary only) |  0.913 | 0.385 | 0.12 | 0.183 |
+| **Bert** | **0.918** | **0.552**	| **0.38**4 | **0.453** |
 | CharCNN |  N/A |  N/A |  N/A |  N/A |
-| AngryBERT (primary only) |  N/A |  N/A |  N/A |  N/A |
 | CharCNN + Glove |  N/A |  N/A |  N/A |  N/A |
-| AngryBERT + Glove (primary only) |  N/A |  N/A |  N/A |  N/A |
