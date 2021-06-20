@@ -38,28 +38,28 @@ HSAOL evaluation. Precision, Recall and F1-score are the results from the hate s
 
 | Model	| Accuracy	| Precision	| Recall | F1|
 | ------| ----------| ----------| -------| --|
-| Bert| N/A | 	N/A	| N/A | 	N/A |
-| CNN	| 0.908 | 0.5	| 0.218	| 0.304	|
+| **CNN**	| **0.908** | **0.5**	| **0.218**	| **0.304**	|
 | Softmax Regression	| 0.757	| 0	| 0	| 0 |
 | RNN	| 0.865	| 0 | 	0 | 	0|
 | BiLSTM| 	0.896| 	0 | 	0 | 	0 |
 | NetLSTM	| 0.897| 	0.377 | 	0.168| 	0.233|
 | GRU	| 0.904	| 0 | 0	| 0 |
-| Transformer (1 layer)	| 0.053 | 	0.053	| 1	| 0.101|
-| Transformer (2 layers)| 	0.053| 	0.053	| 1| 	0.101|
-| CharCNN |  N/A |  N/A |  N/A |  N/A |
-| AngryBERT (primary only) |  N/A |  N/A |  N/A |  N/A |
+| Transformer (1 layer)	| 0.876 | 0.448 | 0.104 | 0.169	|
+| Transformer (2 layers)| 0.887 | 0.4	| 0.192 | 0.26 |
+| UNet | 0.902 | 0.167 | 0.008 |  0.016 |
+| UNet (using linear) | 0.882 | 0.246 | 0.118 | 0.160 |
 | DistilBERT | 0.908 | 0.441  | 0.345| 0.387 |
 | RNN + GloVe	| 0.898| 	0	| 0 | 0|
-| CNN + GloVe	| 0.915	| 0.518 | 0.244 | 0.331 |
+| **CNN + GloVe**	| **0.915**	| **0.518** | **0.244** | **0.331** |
 | BiLSTM + GloVe	| 0.906 | 	0	| 0 | 	0 |
 | GRU + GloVe | 0.909 | 	0	| 0 | 0 |
 | NetLSTM + GloVe	| 0.906 | 	0.397 | 	0.193| 	0.260 |
-| Transformer (1 layer) + GloVe	| 0.053	| 0.053	| 1	| 0.101|
-| Transformer (2 layers) + GloVe| 	0.053| 	0.053| 	1	| 0.101|
-| CharCNN + Glove |  N/A |  N/A |  N/A |  N/A |
-| AngryBERT + Glove (primary only) |  N/A |  N/A |  N/A |  N/A |
+| Transformer (1 layer) + GloVe	| 0.892	| 0.471	| 0.128	| 0.201 |
+| Transformer (2 layers) + GloVe| 0.907 | 0.474 | 0.216 | 0.287 |
 | UNet + Glove | 0.909 | 0 | 0 | 0 |
 | UNet + Glove (using linear) | 0.901 | 0.391 | 0.210 | 0.273 |
-| UNet | 0.902 | 0.167 | 0.008 |  0.016 |
-| UNet (using linear) | 0.882 | 0.246 | 0.118 | 0.160 |
+| Bert| N/A | 	N/A	| N/A | 	N/A |
+| CharCNN |  N/A |  N/A |  N/A |  N/A |
+| AngryBERT (primary only) |  N/A |  N/A |  N/A |  N/A |
+| CharCNN + Glove |  N/A |  N/A |  N/A |  N/A |
+| AngryBERT + Glove (primary only) |  N/A |  N/A |  N/A |  N/A |
